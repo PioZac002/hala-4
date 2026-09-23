@@ -1,0 +1,501 @@
+{
+ "schemaVersion": 2,
+ "generatedAt": "2026-09-22T21:59:44.626695Z",
+ "title": "Design System: Hala 4",
+ "extensions": {
+  "colorMeta": {
+   "paper": {
+    "role": "neutral",
+    "displayName": "Original Sheet",
+    "canonical": "#f9fbfc",
+    "oklch": "oklch(98.7% 0.003 228.8)",
+    "tonalRamp": [
+     "oklch(15% 0.003 228.8)",
+     "oklch(26% 0.003 228.8)",
+     "oklch(37% 0.003 228.8)",
+     "oklch(48% 0.003 228.8)",
+     "oklch(59% 0.003 228.8)",
+     "oklch(70% 0.003 228.8)",
+     "oklch(82% 0.003 228.8)",
+     "oklch(95% 0.003 228.8)"
+    ]
+   },
+   "paper-2": {
+    "role": "neutral",
+    "displayName": "Photo Mat",
+    "canonical": "#eef1f4",
+    "oklch": "oklch(95.7% 0.005 247.9)",
+    "tonalRamp": [
+     "oklch(15% 0.005 247.9)",
+     "oklch(26% 0.005 247.9)",
+     "oklch(37% 0.005 247.9)",
+     "oklch(48% 0.005 247.9)",
+     "oklch(59% 0.005 247.9)",
+     "oklch(70% 0.005 247.9)",
+     "oklch(82% 0.005 247.9)",
+     "oklch(95% 0.005 247.9)"
+    ]
+   },
+   "hall": {
+    "role": "neutral",
+    "displayName": "Hall Light",
+    "canonical": "#e7eaed",
+    "oklch": "oklch(93.6% 0.005 247.9)",
+    "tonalRamp": [
+     "oklch(15% 0.005 247.9)",
+     "oklch(26% 0.005 247.9)",
+     "oklch(37% 0.005 247.9)",
+     "oklch(48% 0.005 247.9)",
+     "oklch(59% 0.005 247.9)",
+     "oklch(70% 0.005 247.9)",
+     "oklch(82% 0.005 247.9)",
+     "oklch(95% 0.005 247.9)"
+    ]
+   },
+   "pink": {
+    "role": "neutral",
+    "displayName": "Carbon Pink",
+    "canonical": "#f7dbe3",
+    "oklch": "oklch(91.7% 0.033 358.6)",
+    "tonalRamp": [
+     "oklch(15% 0.033 358.6)",
+     "oklch(26% 0.033 358.6)",
+     "oklch(37% 0.033 358.6)",
+     "oklch(48% 0.033 358.6)",
+     "oklch(59% 0.033 358.6)",
+     "oklch(70% 0.033 358.6)",
+     "oklch(82% 0.033 358.6)",
+     "oklch(95% 0.033 358.6)"
+    ]
+   },
+   "pink-2": {
+    "role": "neutral",
+    "displayName": "Pink Field",
+    "canonical": "#efc8d4",
+    "oklch": "oklch(87.0% 0.047 357.7)",
+    "tonalRamp": [
+     "oklch(15% 0.047 357.7)",
+     "oklch(26% 0.047 357.7)",
+     "oklch(37% 0.047 357.7)",
+     "oklch(48% 0.047 357.7)",
+     "oklch(59% 0.047 357.7)",
+     "oklch(70% 0.047 357.7)",
+     "oklch(82% 0.047 357.7)",
+     "oklch(95% 0.047 357.7)"
+    ]
+   },
+   "print": {
+    "role": "neutral",
+    "displayName": "Print Black",
+    "canonical": "#17171b",
+    "oklch": "oklch(20.6% 0.008 285.7)",
+    "tonalRamp": [
+     "oklch(15% 0.008 285.7)",
+     "oklch(26% 0.008 285.7)",
+     "oklch(37% 0.008 285.7)",
+     "oklch(48% 0.008 285.7)",
+     "oklch(59% 0.008 285.7)",
+     "oklch(70% 0.008 285.7)",
+     "oklch(82% 0.008 285.7)",
+     "oklch(95% 0.008 285.7)"
+    ]
+   },
+   "print-2": {
+    "role": "neutral",
+    "displayName": "Print Grey",
+    "canonical": "#4a4a52",
+    "oklch": "oklch(41.2% 0.013 285.8)",
+    "tonalRamp": [
+     "oklch(15% 0.013 285.8)",
+     "oklch(26% 0.013 285.8)",
+     "oklch(37% 0.013 285.8)",
+     "oklch(48% 0.013 285.8)",
+     "oklch(59% 0.013 285.8)",
+     "oklch(70% 0.013 285.8)",
+     "oklch(82% 0.013 285.8)",
+     "oklch(95% 0.013 285.8)"
+    ]
+   },
+   "print-pink": {
+    "role": "neutral",
+    "displayName": "Copy Maroon",
+    "canonical": "#5b2c3c",
+    "oklch": "oklch(36.1% 0.071 359.7)",
+    "tonalRamp": [
+     "oklch(15% 0.071 359.7)",
+     "oklch(26% 0.071 359.7)",
+     "oklch(37% 0.071 359.7)",
+     "oklch(48% 0.071 359.7)",
+     "oklch(59% 0.071 359.7)",
+     "oklch(70% 0.071 359.7)",
+     "oklch(82% 0.071 359.7)",
+     "oklch(95% 0.071 359.7)"
+    ]
+   },
+   "ink": {
+    "role": "primary",
+    "displayName": "Ballpoint Blue",
+    "canonical": "#1e3fae",
+    "oklch": "oklch(42.2% 0.181 265.8)",
+    "tonalRamp": [
+     "oklch(15% 0.181 265.8)",
+     "oklch(26% 0.181 265.8)",
+     "oklch(37% 0.181 265.8)",
+     "oklch(48% 0.181 265.8)",
+     "oklch(59% 0.181 265.8)",
+     "oklch(70% 0.181 265.8)",
+     "oklch(82% 0.181 265.8)",
+     "oklch(95% 0.181 265.8)"
+    ]
+   },
+   "ink-deep": {
+    "role": "primary",
+    "displayName": "Pressed Ballpoint",
+    "canonical": "#152f86",
+    "oklch": "oklch(34.9% 0.149 265.8)",
+    "tonalRamp": [
+     "oklch(15% 0.149 265.8)",
+     "oklch(26% 0.149 265.8)",
+     "oklch(37% 0.149 265.8)",
+     "oklch(48% 0.149 265.8)",
+     "oklch(59% 0.149 265.8)",
+     "oklch(70% 0.149 265.8)",
+     "oklch(82% 0.149 265.8)",
+     "oklch(95% 0.149 265.8)"
+    ]
+   },
+   "stamp": {
+    "role": "secondary",
+    "displayName": "Stamp Red",
+    "canonical": "#cc2638",
+    "oklch": "oklch(55.0% 0.199 22.0)",
+    "tonalRamp": [
+     "oklch(15% 0.199 22.0)",
+     "oklch(26% 0.199 22.0)",
+     "oklch(37% 0.199 22.0)",
+     "oklch(48% 0.199 22.0)",
+     "oklch(59% 0.199 22.0)",
+     "oklch(70% 0.199 22.0)",
+     "oklch(82% 0.199 22.0)",
+     "oklch(95% 0.199 22.0)"
+    ]
+   },
+   "carbon": {
+    "role": "tertiary",
+    "displayName": "Carbon Violet",
+    "canonical": "#3f4a9c",
+    "oklch": "oklch(44.5% 0.133 274.0)",
+    "tonalRamp": [
+     "oklch(15% 0.133 274.0)",
+     "oklch(26% 0.133 274.0)",
+     "oklch(37% 0.133 274.0)",
+     "oklch(48% 0.133 274.0)",
+     "oklch(59% 0.133 274.0)",
+     "oklch(70% 0.133 274.0)",
+     "oklch(82% 0.133 274.0)",
+     "oklch(95% 0.133 274.0)"
+    ]
+   },
+   "rule-soft": {
+    "role": "neutral",
+    "displayName": "Hairline",
+    "canonical": "rgb(23 23 27 / 0.2)"
+   },
+   "ink-wash": {
+    "role": "primary",
+    "displayName": "Ink Wash",
+    "canonical": "rgb(30 63 174 / 0.1)"
+   }
+  },
+  "typographyMeta": {
+   "display": {
+    "displayName": "Display",
+    "purpose": "Hero hook in the protocol column; heavy, condensed, balanced."
+   },
+   "display-section": {
+    "displayName": "Section Display",
+    "purpose": "Uppercase form titles for each section (Flota, Cennik, Warunki, Rezerwacja)."
+   },
+   "headline": {
+    "displayName": "Headline",
+    "purpose": "Uppercase sub-sheet titles over a 2px rule (Wydanie / Zwrot)."
+   },
+   "figure": {
+    "displayName": "Figure",
+    "purpose": "Prices, totals and step numerals; condensed, tabular."
+   },
+   "title": {
+    "displayName": "Title",
+    "purpose": "Step headings inside lists."
+   },
+   "body": {
+    "displayName": "Body",
+    "purpose": "Running text with tabular figures."
+   },
+   "lead": {
+    "displayName": "Lead",
+    "purpose": "Section and hero leads in print grey, max 58ch."
+   },
+   "label": {
+    "displayName": "Label",
+    "purpose": "Printed caption of every box, field, column and term."
+   },
+   "button": {
+    "displayName": "Button",
+    "purpose": "Uppercase ink-button lettering."
+   },
+   "ink": {
+    "displayName": "Ink",
+    "purpose": "Handwritten, filled-in values only (Mynerve, 19–24px)."
+   }
+  },
+  "shadows": [
+   {
+    "name": "clipped-print",
+    "value": "0 3px 8px rgb(0 0 0 / 0.18)",
+    "purpose": "Inspection photos clipped into the strip (with 3px white border, ±2deg tilt)."
+   },
+   {
+    "name": "card-print",
+    "value": "0 4px 12px rgb(0 0 0 / 0.16)",
+    "purpose": "Photo on the car card (4px white border, -1.2deg tilt)."
+   },
+   {
+    "name": "paper-clip",
+    "value": "drop-shadow(0 1px 1px rgb(0 0 0 / 0.25))",
+    "purpose": "Filter on the wire clip holding a photo."
+   },
+   {
+    "name": "current-ring",
+    "value": "0 0 0 3px var(--paper), 0 0 0 5px var(--ink)",
+    "purpose": "Selected inspection photo; state, not elevation."
+   },
+   {
+    "name": "field-focus",
+    "value": "inset 0 0 0 2px var(--ink)",
+    "purpose": "Focused form cell (with ink-wash fill)."
+   },
+   {
+    "name": "field-error",
+    "value": "inset 0 0 0 2px var(--stamp)",
+    "purpose": "Form cell with an error."
+   }
+  ],
+  "motion": [
+   {
+    "name": "ease-out",
+    "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+    "purpose": "Default easing for pen strokes, drops and nav underlines."
+   },
+   {
+    "name": "state",
+    "value": "160ms ease",
+    "purpose": "Button, row and field background changes."
+   },
+   {
+    "name": "pen-tick",
+    "value": "380ms stroke-dashoffset",
+    "purpose": "Checkbox tick drawn by pen."
+   },
+   {
+    "name": "pen-circle",
+    "value": "520ms stroke-dashoffset",
+    "purpose": "Hand-circled register choice."
+   },
+   {
+    "name": "ink-write",
+    "value": "900ms clip-path inset reveal",
+    "purpose": "New handwritten value written in left to right."
+   },
+   {
+    "name": "photo-drop",
+    "value": "620ms, from translateY(-26px) scale(1.3) brightness(2.4)",
+    "purpose": "Shutter frame dropping into the strip."
+   },
+   {
+    "name": "signature",
+    "value": "1.2s cubic-bezier(0.5, 0.1, 0.3, 1)",
+    "purpose": "Signature drawn stroke by stroke."
+   },
+   {
+    "name": "stamp-press",
+    "value": "420ms cubic-bezier(0.3, 0, 0.2, 1), 1.15s delay",
+    "purpose": "Stamp pressed in from 1.45x after the signature."
+   },
+   {
+    "name": "reduced-motion",
+    "value": "1ms",
+    "purpose": "All motion collapses; protocol shown already filled in."
+   }
+  ],
+  "breakpoints": [
+   {
+    "name": "phone",
+    "value": "860px"
+   },
+   {
+    "name": "narrow-desktop",
+    "value": "1180px"
+   },
+   {
+    "name": "short-desktop",
+    "value": "max-height 800px"
+   },
+   {
+    "name": "smallest-phone",
+    "value": "380px"
+   }
+  ]
+ },
+ "components": [
+  {
+   "name": "Primary Button",
+   "kind": "button",
+   "refersTo": "button-primary",
+   "description": "Ballpoint-blue printed button; pressing it signs.",
+   "html": "<button class=\"ds-btn\">Wybierz termin <svg class=\"ds-icon\" viewBox=\"0 0 20 20\"><path d=\"M3 10h13M11 4.5 16.5 10 11 15.5\"/></svg></button>",
+   "css": ".ds-btn{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:12px 20px;border:0;border-radius:2px;background:var(--ink,#1e3fae);color:var(--paper,#f9fbfc);font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;font-stretch:88%;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;transition:background-color 160ms ease,transform 160ms cubic-bezier(0.16,1,0.3,1)}.ds-btn:hover{background:var(--ink-deep,#152f86)}.ds-btn:active{transform:translateY(1px)}.ds-btn:focus-visible{outline:2px solid var(--ink,#1e3fae);outline-offset:3px}.ds-icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform 220ms cubic-bezier(0.16,1,0.3,1)}.ds-btn:hover .ds-icon{transform:translateX(3px)}"
+  },
+  {
+   "name": "Small Button",
+   "kind": "button",
+   "refersTo": "button-small",
+   "description": "Masthead Rezerwuj.",
+   "html": "<a class=\"ds-btn-sm\" href=\"#\">Rezerwuj</a>",
+   "css": ".ds-btn-sm{display:inline-flex;align-items:center;min-height:38px;padding:8px 14px;border-radius:2px;background:var(--ink,#1e3fae);color:var(--paper,#f9fbfc);font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:700;font-stretch:88%;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;transition:background-color 160ms ease}.ds-btn-sm:hover{background:var(--ink-deep,#152f86)}.ds-btn-sm:focus-visible{outline:2px solid var(--ink,#1e3fae);outline-offset:3px}"
+  },
+  {
+   "name": "Text Link",
+   "kind": "custom",
+   "refersTo": "link",
+   "description": "Ink underline link beside a button.",
+   "html": "<a class=\"ds-link\" href=\"#\">Cała flota</a>",
+   "css": ".ds-link{font-family:'Archivo','Helvetica Neue',Arial,sans-serif;color:var(--ink,#1e3fae);font-weight:600;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:5px}.ds-link:hover{text-decoration-thickness:2.5px}.ds-link:focus-visible{outline:2px solid var(--ink,#1e3fae);outline-offset:3px}"
+  },
+  {
+   "name": "Printed Box",
+   "kind": "card",
+   "refersTo": "box",
+   "description": "1px ruled field box with its label inside the top-left corner and ink values.",
+   "html": "<div class=\"ds-box\"><span class=\"ds-box-label\">Pojazd i trasa obchodu</span><dl class=\"ds-rows\"><div><dt>Pojazd</dt><dd>VW Golf R</dd></div><div><dt>Napęd · skrzynia</dt><dd>4MOTION · DSG</dd></div></dl></div>",
+   "css": ".ds-box{position:relative;border:1px solid var(--print,#17171b);padding:30px 18px 18px;background:var(--paper,#f9fbfc);font-family:'Archivo','Helvetica Neue',Arial,sans-serif;color:var(--print,#17171b)}.ds-box-label{position:absolute;top:7px;left:10px;font-size:11.5px;font-weight:600;font-stretch:85%;letter-spacing:0.04em;text-transform:uppercase;color:var(--print-2,#4a4a52);line-height:1.2;}.ds-rows{margin:0}.ds-rows>div{padding:7px 0 8px;border-bottom:1px solid var(--rule-soft,rgb(23 23 27/.2))}.ds-rows>div:last-child{border-bottom:0}.ds-rows dt{font-size:11.5px;font-weight:600;font-stretch:85%;letter-spacing:0.04em;text-transform:uppercase;color:var(--print-2,#4a4a52);line-height:1.2;}.ds-rows dd{margin:0;font-family:'Mynerve','Bradley Hand','Segoe Print',cursive;color:var(--ink,#1e3fae);font-size:22px;line-height:1.15}"
+  },
+  {
+   "name": "Form Field",
+   "kind": "input",
+   "refersTo": "field",
+   "description": "Ruled form cell; value handwritten in ink; focus washes blue, error rings red with a handwritten note.",
+   "html": "<label class=\"ds-f\"><span class=\"ds-f-label\">Imię i nazwisko</span><input value=\"Jan Kowalski\"></label><label class=\"ds-f ds-f-err\"><span class=\"ds-f-label\">Telefon</span><input><span class=\"ds-annot\">Brakuje numeru.</span></label>",
+   "css": ".ds-f{display:flex;flex-direction:column;gap:4px;padding:10px 14px;border:1px solid var(--print,#17171b);margin-top:-1px;background:var(--paper,#f9fbfc);transition:background-color 160ms ease}.ds-f-label{font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-size:11.5px;font-weight:600;font-stretch:85%;letter-spacing:0.04em;text-transform:uppercase;color:var(--print-2,#4a4a52);line-height:1.2;}.ds-f input{border:0;padding:0;background:transparent;outline:none;font-family:'Mynerve','Bradley Hand','Segoe Print',cursive;color:var(--ink,#1e3fae);font-size:24px;line-height:1.3;min-height:36px}.ds-f:focus-within{background:var(--ink-wash,rgb(30 63 174/.1));box-shadow:inset 0 0 0 2px var(--ink,#1e3fae)}.ds-f-err{box-shadow:inset 0 0 0 2px var(--stamp,#cc2638)}.ds-annot{font-family:'Mynerve','Bradley Hand','Segoe Print',cursive;color:var(--stamp,#cc2638);font-size:17px;line-height:1.25}"
+  },
+  {
+   "name": "Character Cells",
+   "kind": "input",
+   "refersTo": "char-cell",
+   "description": "Printed per-character boxes for dates and phone; next cell underlined in ink.",
+   "html": "<span class=\"ds-cb\"><span class=\"ds-cell\">2</span><span class=\"ds-cell\">3</span><span class=\"ds-sep\">.</span><span class=\"ds-cell\">0</span><span class=\"ds-cell ds-next\"></span></span>",
+   "css": ".ds-cb{display:inline-flex;align-items:flex-end}.ds-cell{display:grid;place-items:end center;width:26px;height:36px;padding-bottom:2px;border:1px solid var(--print,#17171b);margin-left:-1px;background:var(--paper,#f9fbfc);font-family:'Mynerve','Bradley Hand','Segoe Print',cursive;color:var(--ink,#1e3fae);font-size:24px;line-height:1}.ds-next{background:var(--ink-wash,rgb(30 63 174/.1));box-shadow:inset 0 -3px 0 var(--ink,#1e3fae)}.ds-sep{padding:0 3px 3px 5px;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:18px;line-height:1}"
+  },
+  {
+   "name": "Checkbox with Pen Tick",
+   "kind": "custom",
+   "refersTo": "checkbox",
+   "description": "Square printed box; the check is an overshooting blue pen stroke.",
+   "html": "<label class=\"ds-req\"><span class=\"ds-check\"><svg viewBox=\"0 0 24 24\"><path d=\"M4.5 12.5c1.6 1.2 3 2.9 4.2 5.2C11.3 11.6 15 7 20 3.8\"/></svg></span>Mam co najmniej 25 lat</label>",
+   "css": ".ds-req{display:flex;align-items:center;gap:14px;padding:12px 0;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-size:17px;color:var(--print,#17171b)}.ds-check{position:relative;width:20px;height:20px;border:1.5px solid var(--print,#17171b);background:var(--paper,#f9fbfc)}.ds-check svg{position:absolute;width:30px;height:30px;left:-3px;top:-12px;overflow:visible;fill:none;stroke:var(--ink,#1e3fae);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}"
+  },
+  {
+   "name": "Masthead",
+   "kind": "nav",
+   "refersTo": "masthead",
+   "description": "Fixed printed header strip divided into ruled cells; red serial; ink underline on hover.",
+   "html": "<header class=\"ds-mast\"><a class=\"ds-mark\" href=\"#\">Hala 4</a><span class=\"ds-doc\">Protokół zdawczo-odbiorczy <b>Nr 000417</b></span><nav class=\"ds-nav\"><a href=\"#\">Flota</a><a href=\"#\">Cennik</a><a href=\"#\">Warunki</a></nav></header>",
+   "css": ".ds-mast{display:flex;align-items:stretch;height:56px;background:var(--paper,#f9fbfc);border-bottom:2px solid var(--print,#17171b);font-family:'Archivo','Helvetica Neue',Arial,sans-serif;color:var(--print,#17171b)}.ds-mast>*{display:flex;align-items:center;gap:10px;padding:0 24px}.ds-mast>*+*{border-left:1px solid var(--print,#17171b)}.ds-mark{font-size:27px;font-weight:900;font-stretch:62%;text-transform:uppercase;text-decoration:none;color:inherit;line-height:1}.ds-doc{font-size:12px;font-weight:600;font-stretch:85%;text-transform:uppercase;letter-spacing:0.04em;color:var(--print-2,#4a4a52)}.ds-doc b{color:var(--stamp,#cc2638);font-weight:700;font-stretch:90%;letter-spacing:0.06em}.ds-nav{flex:1;justify-content:flex-end;gap:24px}.ds-nav a{font-size:14px;font-weight:600;text-decoration:none;color:inherit;padding:6px 0;background:linear-gradient(var(--ink,#1e3fae),var(--ink,#1e3fae)) 0 100%/0 2px no-repeat;transition:background-size 260ms cubic-bezier(0.16,1,0.3,1)}.ds-nav a:hover,.ds-nav a:focus-visible{background-size:100% 2px;outline:none}"
+  },
+  {
+   "name": "Carbon Copy Picker",
+   "kind": "input",
+   "refersTo": "picker",
+   "description": "Select printed on the pink copy; its ink arrives as carbon violet, off register.",
+   "html": "<div class=\"ds-copy\"><label class=\"ds-picker\"><span>Auto</span><select><option>VW Golf R</option></select></label></div>",
+   "css": ".ds-copy{background:var(--pink,#f7dbe3);padding:24px}.ds-picker{display:grid;gap:4px;min-width:280px;padding:8px 12px 6px;border:1px solid var(--print,#17171b);background:var(--pink-2,#efc8d4)}.ds-picker span{font-family:'Archivo','Helvetica Neue',Arial,sans-serif;font-size:11.5px;font-weight:600;font-stretch:85%;letter-spacing:0.04em;text-transform:uppercase;color:var(--print-2,#4a4a52);line-height:1.2;color:var(--print-pink,#5b2c3c)}.ds-picker select{appearance:none;border:0;background:transparent;font-family:'Mynerve','Bradley Hand','Segoe Print',cursive;font-size:24px;color:var(--carbon,#3f4a9c);text-shadow:0.6px 0.4px 0 rgb(63 74 156/.45),-0.3px 0 0.6px rgb(63 74 156/.35);outline:none}.ds-picker:focus-within{box-shadow:0 0 0 2px var(--ink,#1e3fae)}"
+  },
+  {
+   "name": "Stamp",
+   "kind": "custom",
+   "refersTo": "stamp",
+   "description": "Red rubber stamp pressed at the end of a protocol; the only rounded shape.",
+   "html": "<svg class=\"ds-stamp\" viewBox=\"0 0 220 112\"><rect x=\"4\" y=\"4\" width=\"212\" height=\"104\" rx=\"9\"/><rect x=\"11\" y=\"11\" width=\"198\" height=\"90\" rx=\"5\" stroke-width=\"1.4\"/><text x=\"110\" y=\"62\" text-anchor=\"middle\" class=\"w\">WYDANO</text><text x=\"110\" y=\"88\" text-anchor=\"middle\" class=\"m\">HALA 4 · 22.09.2026</text></svg>",
+   "css": ".ds-stamp{width:200px;fill:none;stroke:var(--stamp,#cc2638);stroke-width:4;transform:rotate(-8deg);mix-blend-mode:multiply;opacity:.9}.ds-stamp text{fill:var(--stamp,#cc2638);stroke:none;font-family:'Archivo','Helvetica Neue',Arial,sans-serif;}.ds-stamp .w{font-size:44px;font-weight:900;font-stretch:70%;letter-spacing:0.08em}.ds-stamp .m{font-size:12.5px;font-weight:700;font-stretch:85%;letter-spacing:0.14em}"
+  },
+  {
+   "name": "Car Picker",
+   "kind": "custom",
+   "refersTo": "picker",
+   "description": "Printed strip under the film caption; the car being walked around is circled by hand in blue.",
+   "html": "<div class=\"ds-pick\"><span class=\"ds-pick__label\">Auto w hali</span><ul class=\"ds-pick__list\"><li><button class=\"ds-pick__btn\">Golf R</button></li><li><button class=\"ds-pick__btn is-on\">RS 3<svg viewBox=\"0 0 200 50\" preserveAspectRatio=\"none\"><path d=\"M14 30C10 15 60 5 110 6c52 1 84 8 82 20-3 14-60 20-104 19C40 44 6 38 12 24 16 14 40 9 62 8\"/></svg></button></li><li><button class=\"ds-pick__btn\">911 GT3 RS</button></li></ul></div>",
+   "css": ".ds-pick{display:flex;align-items:baseline;gap:16px;padding-top:9px;border-top:1px solid var(--rule-soft,rgb(23 23 27/.2));font-family:'Archivo',sans-serif}.ds-pick__label{font-size:11.5px;font-weight:600;font-stretch:85%;letter-spacing:.04em;text-transform:uppercase;color:var(--print-2,#4a4a52)}.ds-pick__list{display:flex;gap:4px 22px;margin:0;padding:0;list-style:none}.ds-pick__btn{position:relative;padding:3px 2px;border:0;background:none;color:var(--print,#17171b);font:650 14px/1.4 'Archivo',sans-serif;font-stretch:92%;cursor:pointer}.ds-pick__btn:hover{color:var(--ink,#1e3fae)}.ds-pick__btn svg{position:absolute;inset:-7px -13px;width:calc(100% + 24px);height:calc(100% + 14px);overflow:visible;fill:none;stroke:var(--ink,#1e3fae);stroke-width:1.6;stroke-linecap:round;pointer-events:none}"
+  },
+  {
+   "name": "Answer Desk",
+   "kind": "custom",
+   "refersTo": "desk",
+   "description": "Service window pushed down from the masthead: the visitor writes in ink, the assistant answers in print.",
+   "html": "<div class=\"ds-desk\"><div class=\"ds-desk__head\"><span class=\"ds-desk__label\">Okienko obsługi</span><button class=\"ds-desk__close\">Zamknij</button></div><p class=\"ds-desk__q\"><span class=\"ds-desk__n\">Pyt. 01</span><span class=\"ds-desk__ink\">Jaka jest kaucja?</span></p><p class=\"ds-desk__a\"><span class=\"ds-desk__n\">Odp. 01</span>Kaucja przy Golfie R to 5000 zł — blokada na karcie, zwracana po zwrocie auta bez uwag.</p></div>",
+   "css": ".ds-desk{width:430px;padding:8px 14px 14px;background:var(--paper,#f9fbfc);border:1px solid var(--print,#17171b);border-top:0;border-bottom-width:2px;font-family:'Archivo',sans-serif}.ds-desk__head{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px;border-bottom:1.5px solid var(--print,#17171b)}.ds-desk__label{font-size:11.5px;font-weight:600;font-stretch:85%;letter-spacing:.04em;text-transform:uppercase;color:var(--print-2,#4a4a52)}.ds-desk__close{border:0;background:none;color:var(--ink,#1e3fae);font:600 13px 'Archivo',sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer}.ds-desk__n{display:block;margin-bottom:2px;font-size:11.5px;font-weight:600;font-stretch:85%;letter-spacing:.04em;text-transform:uppercase;color:var(--print-2,#4a4a52)}.ds-desk__q,.ds-desk__a{margin:0;padding:10px 0;border-bottom:1px solid var(--rule-soft,rgb(23 23 27/.2))}.ds-desk__ink{display:block;font-family:'Mynerve',cursive;font-size:20px;line-height:1.25;color:var(--ink,#1e3fae)}.ds-desk__a{font-size:15px;line-height:1.45;color:var(--print,#17171b)}"
+  }
+ ],
+ "narrative": {
+  "northStar": "The Handover Protocol",
+  "overview": "Every surface is a printed rental form, not a web page. The page is a protocol: a bright cool-white original sheet, then a pink carbon copy for the renter, then a perforated tear-off stub. Structure is a one-colour printed grid in print black: labeled field boxes, character cells, checkboxes, crop marks around photo fields, perforation and fold rules. Content arrives the way a form gets filled in: ballpoint-blue handwriting written in by pen, small photos clipped to the sheet, a signature drawn stroke by stroke, and a red stamp pressed down at the end.\n\nDensity is that of a real form: tight, ruled, labeled, legible. Type does the heavy work. Archivo's width axis runs from very condensed display lettering (62–70%) to slightly condensed labels (85–92%). Mynerve is the only handwriting face and appears only where something has been filled in. Colour is functional. Black is the printed form, blue is anything written into it, red is anything official (serial numbers, the stamp, error notes), and pink is the carbon copy.\n\nThe world rejects the usual rental arrangement: a dark full-bleed video under a glass booking bar with a gold accent. There is no dark mode, no glass, no gold, and no floating card UI.",
+  "keyCharacteristics": [
+   "Two paper stocks: cool-white original (`paper`) and pink carbon copy (`pink`), joined by a perforated edge.",
+   "One-colour print grid: 1px rules, 1.5–2px rules for heavy dividers, labels sitting inside the top-left corner of each box.",
+   "Three inks with fixed jobs: print black, ballpoint blue, stamp red.",
+   "Condensed, heavy Archivo for print; Mynerve handwriting only for filled-in values.",
+   "Motion comes from the physical act (pen stroke, shutter flash, photo drop, stamp press), never a generic fade-up."
+  ],
+  "rules": [
+   {
+    "name": "The Three Inks Rule",
+    "body": "Black prints, blue writes, red certifies. A value typed or chosen by a person is always blue. A number or mark issued by the company is always red. Nothing else gets colour.",
+    "section": "colors"
+   },
+   {
+    "name": "The Carbon Rule",
+    "body": "On the pink copy, blue ink turns into `carbon` with its off-register shadow, and grey print turns into `print-pink`. Never put pure `ink` handwriting on pink.",
+    "section": "colors"
+   },
+   {
+    "name": "The Printed / Written Rule",
+    "body": "If it was typeset in advance, it's Archivo. If someone filled it in, it's Mynerve in ink blue. Never set a heading, button, or label in Mynerve. Never set a user value in Archivo.",
+    "section": "typography"
+   },
+   {
+    "name": "The Width Axis Rule",
+    "body": "Bigger means narrower. Display runs wdth 62–70, buttons and picks 88–92, labels 85, and body 100. Don't set a large heading at normal width.",
+    "section": "typography"
+   },
+   {
+    "name": "The Objects-Only Rule",
+    "body": "Only a physical object lying on the form casts a shadow (a photo print, a clip). Printed boxes, buttons, and panels never do.",
+    "section": "elevation"
+   }
+  ],
+  "dos": [
+   "**Do** build new surfaces from printed boxes: a 1px `print` frame, with the label inside the top-left corner (11.5px, 600, wdth 85, uppercase, 0.04em).",
+   "**Do** write every user-entered or chosen value in Mynerve `ink`, and switch it to `carbon` with the off-register shadow on the pink copy.",
+   "**Do** keep red for serial numbers, the stamp, and errors. Report errors as a red handwritten note plus a 2px inset `stamp` ring on the field.",
+   "**Do** separate sections with print devices: 2px rules, the scalloped perforation, dashed perforation or fold lines.",
+   "**Do** tie motion to a physical act (pen stroke, shutter, drop, stamp press), easing with `cubic-bezier(0.16, 1, 0.3, 1)`, and collapse it to the finished state under reduced motion.",
+   "**Do** keep all figures tabular and set prices as a condensed Figure followed by a small grey unit."
+  ],
+  "donts": [
+   "**Don't** build the dark full-bleed video under a glass booking bar with a gold accent.",
+   "**Don't** give printed boxes, buttons, or panels shadows or hover lift. Shadows belong only to photo prints and the paper clip.",
+   "**Don't** round the form grid. Boxes, fields, cells, and tables stay square. Only the button's 2px corner and the rubber stamp soften.",
+   "**Don't** use Mynerve for anything printed (headings, labels, buttons, navigation), and don't set user values in Archivo.",
+   "**Don't** add an accent hue beyond the three inks and two paper stocks. The only other colours belong to physical objects: the white border on photo prints and the steel grey of the paper clip."
+  ]
+ }
+}
