@@ -60,8 +60,10 @@ const fragment = /* glsl */ `
 
   void main() {
     vec2 c = vUv - 0.5;
-    // a slight lens push that breathes with the shutter, plus pointer parallax
-    vec2 uv = clamp(0.5 + c / (1.04 + uFlash * 0.025) + uMouse * vec2(0.012, 0.008), 0.0, 1.0);
+    // No standing lens push: on a retina screen the 1600px frames then land close to 1:1
+    // instead of being upscaled, which is what keeps the film as crisp as the photo beside it.
+    // The shutter still breathes, and the pointer parallax rides on a smaller offset.
+    vec2 uv = clamp(0.5 + c / (1.0 + uFlash * 0.03) + uMouse * vec2(0.008, 0.005), 0.0, 1.0);
 
     // scroll speed splits the channels a touch, like a lens under load
     float ca = clamp(abs(uVel), 0.0, 1.0) * 0.005;
@@ -261,7 +263,7 @@ export function FilmField({
     <Canvas
       className="film__canvas"
       frameloop={active ? 'always' : 'never'}
-      dpr={[1, 1.75]}
+      dpr={[1, 2]}
       gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}
       aria-hidden="true"
     >

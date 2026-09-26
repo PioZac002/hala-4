@@ -1,24 +1,26 @@
 import { useState } from 'react'
-import { DELIVERY, EXTRA_KM, FLEET, OWN_SHARE, TIERS, tierPerDay, tierTotal, zl } from '../data'
+import { DELIVERY, EXTRA_KM, FLEET, OWN_SHARE, TIERS, tierPerDay, tierTotal } from '../data'
 import { Tick } from '../components/Marks'
+import { decimal, money, useI18n, type Key } from '../i18n'
 
 // The pink carbon copy: everything the renter takes home — price, deposit, limits, requirements.
 
-const REQUIREMENTS = [
-  { id: 'age', label: 'Masz co najmniej 25 lat' },
-  { id: 'licence', label: 'Prawo jazdy kat. B masz od minimum 3 lat' },
-  { id: 'id', label: 'Masz dowód osobisty albo paszport' },
-  { id: 'card', label: 'Masz kartę kredytową na blokadę kaucji' },
+const REQUIREMENTS: { id: string; key: Key }[] = [
+  { id: 'age', key: 'terms.req.age' },
+  { id: 'licence', key: 'terms.req.licence' },
+  { id: 'id', key: 'terms.req.id' },
+  { id: 'card', key: 'terms.req.card' },
 ]
 
-const RULES = [
-  { k: 'Paliwo', v: 'Odbierasz z pełnym bakiem i z pełnym oddajesz.' },
-  { k: 'Wyjazd za granicę', v: 'W Unii Europejskiej, po wcześniejszym zgłoszeniu.' },
-  { k: 'Tor i imprezy', v: 'Jazda po torze jest wykluczona z ubezpieczenia.' },
-  { k: 'Zwierzęta', v: 'Tylko w transporterze. Nie palimy w autach.' },
+const RULES: [Key, Key][] = [
+  ['terms.rule.fuel', 'terms.rule.fuelV'],
+  ['terms.rule.abroad', 'terms.rule.abroadV'],
+  ['terms.rule.track', 'terms.rule.trackV'],
+  ['terms.rule.pets', 'terms.rule.petsV'],
 ]
 
 export function CarbonCopy({ carId, onCar }: { carId: string; onCar: (id: string) => void }) {
+  const { t, loc, lang } = useI18n()
   const car = FLEET.find((c) => c.id === carId) ?? FLEET[0]
   const max = car.day
   const [checked, setChecked] = useState<Record<string, boolean>>({})
@@ -27,17 +29,17 @@ export function CarbonCopy({ carId, onCar }: { carId: string; onCar: (id: string
   return (
     <div className="copy">
       <div className="copy__edge" aria-hidden="true">
-        <span>Kopia dla najemcy</span>
-        <span>Druk H4/P-01 · egz. 2</span>
+        <span>{t('copy.forRenter')}</span>
+        <span>{t('copy.form')}</span>
       </div>
 
       <section id="cennik" className="sheet-section" aria-labelledby="price-title">
         <div className="section-head section-head--row">
           <h2 id="price-title" className="display display--section">
-            Cennik
+            {t('price.title')}
           </h2>
           <label className="picker">
-            <span className="picker__label">Auto</span>
+            <span className="picker__label">{t('price.car')}</span>
             <select className="ink" value={car.id} onChange={(e) => onCar(e.target.value)}>
               {FLEET.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -50,33 +52,37 @@ export function CarbonCopy({ carId, onCar }: { carId: string; onCar: (id: string
 
         <div className="price-layout">
           <div className="tiers box">
-            <span className="box__label">Cena za dobę maleje z długością najmu</span>
+            <span className="box__label">{t('price.boxLabel')}</span>
             <table>
-              <caption className="sr-only">Cennik dla auta {car.model}</caption>
+              <caption className="sr-only">{t('price.caption', { model: car.model })}</caption>
               <thead>
                 <tr>
-                  <th scope="col">Okres</th>
+                  <th scope="col">{t('price.period')}</th>
                   <th scope="col" className="tiers__barcol">
-                    <span className="sr-only">Porównanie ceny za dobę</span>
+                    <span className="sr-only">{t('price.compare')}</span>
                   </th>
-                  <th scope="col" className="num">Za dobę</th>
-                  <th scope="col" className="num">Razem</th>
+                  <th scope="col" className="num">{t('price.perDay')}</th>
+                  <th scope="col" className="num">{t('price.total')}</th>
                 </tr>
               </thead>
               <tbody>
-                {TIERS.map((t) => {
-                  const perDay = tierPerDay(car, t)
+                {TIERS.map((tier) => {
+                  const perDay = tierPerDay(car, tier)
                   return (
-                    <tr key={t.id}>
+                    <tr key={tier.id}>
                       <th scope="row">
-                        {t.label}
-                        <span className="tiers__detail">{t.detail}</span>
+                        {loc(tier.label)}
+                        <span className="tiers__detail">{loc(tier.detail)}</span>
                       </th>
                       <td className="tiers__barcol" aria-hidden="true">
                         <span className="bar" style={{ '--w': perDay / max } as React.CSSProperties} />
                       </td>
-                      <td className="num">{zl(perDay)}</td>
-                      <td className="num strong">{t.id === 'd3' ? `od ${zl(tierTotal(car, { ...t, days: 2 }))}` : zl(tierTotal(car, t))}</td>
+                      <td className="num">{money(perDay, lang)}</td>
+                      <td className="num strong">
+                        {tier.id === 'd3'
+                          ? t('price.fromTotal', { amount: money(tierTotal(car, { ...tier, days: 2 }), lang) })
+                          : money(tierTotal(car, tier), lang)}
+                      </td>
                     </tr>
                   )
                 })}
@@ -85,47 +91,39 @@ export function CarbonCopy({ carId, onCar }: { carId: string; onCar: (id: string
           </div>
 
           <dl className="terms box">
-            <span className="box__label">Rozliczenie</span>
+            <span className="box__label">{t('price.settlement')}</span>
             <div>
-              <dt>Kaucja</dt>
-              <dd>
-                <b>{zl(car.deposit)}</b> blokady na karcie, zwalniamy ją po zwrocie auta
-              </dd>
+              <dt>{t('foot.deposit')}</dt>
+              <dd>{t('price.depositNote', { amount: money(car.deposit, lang) })}</dd>
             </div>
             <div>
-              <dt>Limit</dt>
-              <dd>
-                <b>{car.kmPerDay} km</b> na dobę, każdy kolejny {EXTRA_KM.toFixed(2).replace('.', ',')} zł
-              </dd>
+              <dt>{t('foot.limit')}</dt>
+              <dd>{t('price.limitNote', { km: car.kmPerDay, rate: `${decimal(EXTRA_KM, lang)} ${lang === 'pl' ? 'zł' : 'PLN'}` })}</dd>
             </div>
             <div>
-              <dt>Ubezpieczenie</dt>
-              <dd>
-                OC, AC i NNW w cenie, udział własny <b>{zl(OWN_SHARE)}</b>
-              </dd>
+              <dt>{t('price.insurance')}</dt>
+              <dd>{t('price.insuranceNote', { amount: money(OWN_SHARE, lang) })}</dd>
             </div>
             <div>
-              <dt>Dowóz</dt>
-              <dd>
-                Po Warszawie <b>{zl(DELIVERY)}</b> w jedną stronę albo odbiór w hali za darmo
-              </dd>
+              <dt>{t('price.delivery')}</dt>
+              <dd>{t('price.deliveryNote', { amount: money(DELIVERY, lang) })}</dd>
             </div>
           </dl>
         </div>
-        <p className="footnote">Wszystkie kwoty są przykładowe i czekają na prawdziwy cennik.</p>
+        <p className="footnote">{t('price.footnote')}</p>
       </section>
 
       <section id="warunki" className="sheet-section" aria-labelledby="terms-title">
         <div className="section-head">
           <h2 id="terms-title" className="display display--section">
-            Warunki
+            {t('terms.title')}
           </h2>
-          <p className="section-lead">Cztery rzeczy, które sprawdzimy przy odbiorze. Zaznacz, co się zgadza.</p>
+          <p className="section-lead">{t('terms.lead')}</p>
         </div>
 
         <div className="terms-layout">
           <fieldset className="reqs box">
-            <legend className="box__label">Najemca</legend>
+            <legend className="box__label">{t('terms.renter')}</legend>
             {REQUIREMENTS.map((r) => (
               <label key={r.id} className="req">
                 <input
@@ -136,25 +134,25 @@ export function CarbonCopy({ carId, onCar }: { carId: string; onCar: (id: string
                 <span className="checkbox" aria-hidden="true">
                   <Tick on={!!checked[r.id]} />
                 </span>
-                <span>{r.label}</span>
+                <span>{t(r.key)}</span>
               </label>
             ))}
             <p className={`reqs__verdict ink ${all ? 'is-on' : ''}`} aria-live="polite">
               {all ? (
                 <>
-                  Wszystko się zgadza. <a href="#rezerwacja">Wypełnij rezerwację</a>
+                  {t('terms.allGood')} <a href="#rezerwacja">{t('terms.fillBooking')}</a>
                 </>
               ) : (
-                `Zaznaczone: ${REQUIREMENTS.filter((r) => checked[r.id]).length} z ${REQUIREMENTS.length}`
+                t('terms.ticked', { n: REQUIREMENTS.filter((r) => checked[r.id]).length, total: REQUIREMENTS.length })
               )}
             </p>
           </fieldset>
 
           <dl className="rules">
-            {RULES.map((r) => (
-              <div key={r.k}>
-                <dt>{r.k}</dt>
-                <dd>{r.v}</dd>
+            {RULES.map(([head, body]) => (
+              <div key={head}>
+                <dt>{t(head)}</dt>
+                <dd>{t(body)}</dd>
               </div>
             ))}
           </dl>

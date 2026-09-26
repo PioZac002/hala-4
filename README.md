@@ -1,59 +1,66 @@
-# Hala 4 — landing wypożyczalni (koncept)
+# Hala 4 — car rental landing page (concept)
 
-Vite + React 19 + React Three Fiber. Hero to obchód auta przewijany scrollem w WebGL, który wypełnia protokół zdawczo-odbiorczy. Cztery auta mają własny film z hali i można je przełączać w locie.
+Vite + React 19 + React Three Fiber. The hero is a scroll-scrubbed walk-around of a car in WebGL that fills in a handover protocol as it goes. Four cars have their own film shot in the hall and can be switched on the fly. The page is printed in two languages, English by default.
 
 ```bash
 npm install
-npm run dev      # http://localhost:5174 (port z .claude/launch.json) albo domyślny port Vite
-npm run build    # produkcyjny build do dist/
+npm run dev      # http://localhost:5174 (port from .claude/launch.json), or Vite's default port
+npm run build    # production build into dist/
 ```
 
-## Jak działa hero
+## How the hero works
 
-- Każde auto z filmem ma własny katalog klatek: `public/frames/<auto>/d/` (120 klatek WebP 1600×900, desktop) i `public/frames/<auto>/m/` (80 klatek 1280×720, telefony) plus `poster.webp`. Sekwencja klatek zamiast wideo, bo daje płynne przewijanie w obie strony w każdej przeglądarce (także w Safari na iOS).
-- `src/data.ts` trzyma dla każdego auta pole `film`: punkty obchodu (5 zdjęć), trasa aparatu na schemacie i kadrowanie na wąskich ekranach. Reszta hero (mapa scroll → czas filmu, przystanki na zdjęcia, moment podpisu) wylicza się z tych punktów w `src/hero/timeline.ts` — nowe auto nie wymaga strojenia ręcznie.
-- `src/hero/frames.ts` ładuje klatki od zgrubnych do dokładnych i trzyma jeden magazyn na auto, więc powrót do obejrzanego już auta jest natychmiastowy.
-- `src/hero/FilmField.tsx` – pełnoekranowy quad w R3F z własnym shaderem: miksowanie sąsiednich klatek, dopasowanie kadru, paralaksa od kursora, lekka aberracja przy szybkim scrollu, ziarno, błysk migawki i „wywołanie” zdjęcia przy starcie (przy zmianie auta szybsze). three.js ładuje się osobnym chunkiem.
-- Bez WebGL klatki podmieniają się w zwykłym obrazku; przy `prefers-reduced-motion` protokół jest od razu wypełniony, a zdjęcia wybiera się ręcznie.
+- Every filmed car has its own frame directory: `public/frames/<car>/d/` (120 WebP frames, 1600×900, desktop) and `public/frames/<car>/m/` (80 frames, 1280×720, phones), plus `poster.webp`. A frame sequence instead of a video, because it scrubs smoothly in both directions in every browser, Safari on iOS included.
+- `src/data.ts` holds a `film` for each car: the five inspection points, the camera route on the diagram and the crop centre for narrow screens. The rest of the hero (scroll → video time, the stops for photos, the moment of signing) is derived from those points in `src/hero/timeline.ts`, so a new car needs no hand tuning.
+- `src/hero/frames.ts` loads frames coarse-to-fine and keeps one store per car, so coming back to a car you have already watched is instant.
+- `src/hero/FilmField.tsx` — a full-screen quad in R3F with its own shader: blending between neighbouring frames, cover-fit with a movable focus, pointer parallax, a touch of chromatic aberration at speed, grain, the shutter flash and the photo "developing" on load (faster when you switch cars). It renders at device pixel ratio 2 with no standing zoom, so on a retina screen the 1600px frames land close to 1:1. three.js arrives in its own chunk.
+- Without WebGL the same frames are swapped into a plain image element; under `prefers-reduced-motion` the protocol is filled in from the start and the photos are picked by hand.
 
-### Ostre zdjęcia zamiast klatek z filmu
+### Sharp photos instead of video frames
 
-Klatki niosą rozmycie ruchu z filmu. Każdy punkt obchodu można podmienić na prawdziwe zdjęcie: wrzuć plik do `public/frames/<auto>/stills/` (1600×900, ten sam kadr co film) i dopisz go w `src/data.ts`:
+Frames carry the motion blur of the footage. Any inspection point can be swapped for a real photograph: drop the file into `public/frames/<car>/stills/` (1600×900, same framing as the film) and point at it in `src/data.ts`:
 
 ```ts
-{ id: 'front', label: 'Przód', t: 0.3, note: '…', still: '/frames/rs3/stills/front.webp' }
+{ id: 'front', label: { en: 'Front', pl: 'Przód' }, t: 0.3, note: { … }, still: '/frames/rs3/stills/front.webp' }
 ```
 
-Shader przy każdym przystanku przechodzi z klatki filmu na to zdjęcie (i z powrotem, gdy scroll rusza dalej), a strip oględzin, karta auta i wersja bez WebGL biorą je wprost.
+At every stop the shader cross-fades from the film frame to that photo (and back once the scroll moves on), and the inspection strip, the car card and the no-WebGL version take it directly. The RS 3, the 911 GT3 RS and the Octavia RS use this for their front shot.
 
-### Nowe auto z filmem
+### Adding a filmed car
 
-1. Wrzuć plik wideo do `media-exports/` i dopisz go w `tools/build-frames.mjs` (`FILMS`).
-2. `node tools/build-frames.mjs <auto>` — Swift + AVFoundation wycina dokładne klatki (na tej maszynie nie ma ffmpeg), `sharp` skaluje je lanczosem, wyostrza maską i zapisuje WebP razem z metryczką pochodzenia obok każdego pliku.
-3. Dodaj `film` w `src/data.ts`: czasy pięciu punktów obchodu odczytane z klatek, trasa aparatu i kadrowanie.
+1. Put the clip in `media-exports/` and add it to `FILMS` in `tools/build-frames.mjs`.
+2. `node tools/build-frames.mjs <car>` — Swift + AVFoundation cuts the exact frames (this machine has no ffmpeg), `sharp` scales them with lanczos3, runs an unsharp mask and writes WebP together with a provenance sidecar next to every file.
+3. Add the `film` to `src/data.ts`: the times of the five inspection points read off the frames, the camera route and the crop.
 
-## Okienko obsługi (asystent AI)
+## Languages
 
-Przycisk **Obsługa** w nagłówku (na telefonie: „Zapytaj obsługi” w menu) otwiera arkusz, w którym gość pisze pytanie ręcznie, a odpowiedź przychodzi drukiem.
+- `src/i18n.tsx` holds every string a visitor can read, English next to Polish, and exposes `t()` for the page and `loc()` for data-side pairs. `src/format.ts` carries the formatters (money, dates, day counts) with no React in them, so the server can import the same ones.
+- Data-side wording (body types, colours, inspection notes, price tiers, the address) lives in `src/data.ts` as `{ en, pl }` pairs.
+- The switch sits in the masthead as a printed two-cell field; the choice is stored in `localStorage` and drives `<html lang>`, the document title and the meta description. English is the default when nothing is stored.
+- The front desk answers in the page's language: the browser sends `lang` with each question, and `server/knowledge.ts` and `server/offline.ts` carry both editions of the system prompt and the canned answers.
 
-- `server/knowledge.ts` buduje prompt systemowy z `src/data.ts`, więc asystent nigdy nie poda ceny innej niż ta na stronie. Kaganiec jest w tym samym pliku: wyłącznie auta i oferta Hali 4, żadnych obietnic rezerwacji, żadnego zmyślania warunków, odporność na „zignoruj instrukcje”.
-- `server/chat.ts` to jeden handler na Web Request/Response: limit długości i liczby wiadomości, limit zapytań na IP, strumieniowanie SSE do przeglądarki. Model: `claude-opus-5`.
-- `api/chat.ts` to ten sam handler jako funkcja serwerowa (Vercel, Netlify Functions v2). W `npm run dev` obsługuje go plugin z `vite.config.ts` pod tym samym adresem `/api/chat`.
-- Klucz: skopiuj `.env.example` do `.env` i wpisz `ANTHROPIC_API_KEY`. Klucz zostaje na serwerze; przeglądarka widzi tylko tekst odpowiedzi.
-- **Bez klucza** (albo gdy API nie odpowiada) okienko przechodzi na `server/offline.ts`: odpowiada z cennika, na pytania spoza oferty odmawia tak samo jak model, i mówi wprost, że asystent nie jest podłączony.
+## Front desk (AI assistant)
 
-## Do podmiany
+The **Front desk** button in the masthead (on a phone: "Ask the front desk" in the menu) opens a sheet where the visitor writes the question by hand and the answer comes back typed.
 
-Wszystko w `src/data.ts` jest przykładowe: flota, ceny, kaucje, limity km, adres i godziny. Formularz rezerwacji nie ma backendu (`src/sections/Booking.tsx`, funkcja `submit`).
+- `server/knowledge.ts` builds the system prompt out of `src/data.ts`, so the assistant can never quote a price other than the one on the page. The muzzle is in the same file: cars and the Hala 4 offer only, no booking promises, no invented terms, and no obeying "ignore your instructions".
+- `server/chat.ts` is one handler over Web Request/Response: message length and count limits, a per-IP rate limit, SSE streaming to the browser. Model: `claude-opus-5`.
+- `api/chat.ts` is the same handler as a serverless function (Vercel, Netlify Functions v2). Under `npm run dev` a plugin in `vite.config.ts` serves it at the same `/api/chat`.
+- The key: copy `.env.example` to `.env` and fill in `ANTHROPIC_API_KEY`. The key stays on the server; the browser only ever sees the answer text.
+- **Without a key** (or when the API does not answer) the window falls back to `server/offline.ts`: it answers from the price list, turns down off-topic questions the same way the model does, and says plainly that the assistant is not connected.
 
-## Film w lżejszych formatach
+## To replace
 
-`media-exports/` zawiera filmy źródłowe oraz Golfa w wersjach do zwykłego `<video autoplay muted loop playsinline>`:
+Everything in `src/data.ts` is an example: the fleet, prices, deposits, km limits, the address and the opening hours. The booking form has no backend (`src/sections/Booking.tsx`, the `submit` function).
 
-| plik | rozmiar |
+## The film in lighter formats
+
+`media-exports/` holds the source clips plus the Golf in versions for a plain `<video autoplay muted loop playsinline>`:
+
+| file | size |
 |---|---|
-| oryginał `golf8R.mp4` (1920 px, z dźwiękiem) | 9,6 MB |
-| `golf-1280.h264.mp4` | 2,5 MB |
-| `golf-1280.vp9.webm` | 2,5 MB |
-| `golf-1280.av1.webm` | 1,7 MB |
-| `porownanie-960.gif` (tylko dla porównania) | 44 MB |
+| original `golf8R.mp4` (1920 px, with sound) | 9.6 MB |
+| `golf-1280.h264.mp4` | 2.5 MB |
+| `golf-1280.vp9.webm` | 2.5 MB |
+| `golf-1280.av1.webm` | 1.7 MB |
+| `porownanie-960.gif` (kept only for comparison) | 44 MB |

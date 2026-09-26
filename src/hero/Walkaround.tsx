@@ -1,7 +1,8 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
-import { FILMED, filmedById, fmtDate, zl } from '../data'
+import { FILMED, filmedById, fmtDate } from '../data'
 import { Arrow, CameraMark, CarOutline, Clip, Signature, Stamp, Tick } from '../components/Marks'
 import { scrollToY } from '../scroll'
+import { money, useI18n } from '../i18n'
 import type { FilmSignal } from './FilmField'
 import { posterUrl, stillUrl, storeFor } from './frames'
 import { DIAGRAM, activeCheckpoint, cameraAt, focusAt, timeAt, timingFor, trailUpTo } from './timeline'
@@ -20,6 +21,7 @@ export function Walkaround({
   onCar: (id: string) => void
   reduced: boolean
 }) {
+  const { t, loc, lang } = useI18n()
   // Only four cars have footage. Picking one of them anywhere on the page brings the hero with it;
   // picking a car we have no film of leaves the walk-around on the last car it could actually show.
   const car = useMemo(() => filmedById(carId), [carId])
@@ -165,14 +167,14 @@ export function Walkaround({
                 key={`poster-${car.id}`}
                 className="film__poster"
                 src={posterUrl(film)}
-                alt={`${car.model}, kolor ${car.color}, w jasnej hali z liniowym oświetleniem`}
+                alt={t('hero.posterAlt', { model: car.model, color: loc(car.color) })}
                 fetchPriority={car.id === FILMED[0].id ? 'high' : 'auto'}
               />
               {reduced ? (
                 <img
                   className="film__still"
                   src={stillUrl(store.set, film, chosen)}
-                  alt={`Zdjęcie z obchodu: ${film.checkpoints[chosen].label}, ${car.model}`}
+                  alt={t('hero.stillAlt', { label: loc(film.checkpoints[chosen].label), model: car.model })}
                 />
               ) : (
                 <Suspense fallback={null}>
@@ -186,21 +188,21 @@ export function Walkaround({
             </div>
             <figcaption className="film__cap">
               <span className="film__label">
-                Fot. {idx + 1}/5 · <b>{current.label}</b>
+                {t('hero.photoOf', { n: idx + 1 })} <b>{loc(current.label)}</b>
               </span>
               <span className="film__tc" ref={timecode} aria-hidden="true">
                 00:00,0
               </span>
               {!reduced && (
                 <span className={`film__hint ${scrolled ? 'is-gone' : ''}`}>
-                  Przewiń, żeby obejść auto <Arrow dir="down" />
+                  {t('hero.scrollHint')} <Arrow dir="down" />
                 </span>
               )}
             </figcaption>
 
             <div className="pick">
               <span className="pick__label" id="pick-label">
-                Auto w hali
+                {t('hero.pick')}
               </span>
               <ul className="pick__list" aria-labelledby="pick-label">
                 {FILMED.map((c) => {
@@ -232,22 +234,19 @@ export function Walkaround({
 
           <div className="walk__head">
             <h1 id="walk-title" className="display">
-              Zanim ruszysz, obejdziemy auto razem.
+              {t('hero.title')}
             </h1>
-            <p className="lead lead--full">
-              Hala 4 wynajmuje auta sportowe i premium na dobę, weekend albo tydzień. Każde wydajemy w jasnej hali:
-              obchód, zdjęcia z pięciu stron i protokół, który podpisujemy oboje.
-            </p>
-            <p className="lead lead--short">Wynajem aut sportowych i premium. Wydanie w hali, z protokołem i zdjęciami.</p>
+            <p className="lead lead--full">{t('hero.lead')}</p>
+            <p className="lead lead--short">{t('hero.leadShort')}</p>
           </div>
 
           <div className="walk__vehicle box">
-            <span className="box__label">Pojazd i trasa obchodu</span>
+            <span className="box__label">{t('veh.label')}</span>
             <svg
               className="diagram"
               viewBox={`0 0 ${DIAGRAM.w} ${DIAGRAM.h}`}
               role="img"
-              aria-label={`Schemat auta z góry. Aparat: ${current.label}.`}
+              aria-label={t('veh.diagramAria', { label: loc(current.label) })}
             >
               <CarOutline />
               <polyline ref={trail} className="diagram__trail" points="" />
@@ -266,28 +265,28 @@ export function Walkaround({
             </svg>
             <dl className="fields">
               <div className="field">
-                <dt>Pojazd</dt>
+                <dt>{t('veh.vehicle')}</dt>
                 <dd className="ink ink--write" key={`m-${car.id}`}>
                   {car.model}
                 </dd>
               </div>
               <div className="field">
-                <dt>Kolor · moc</dt>
+                <dt>{t('veh.colorPower')}</dt>
                 <dd className="ink" key={`c-${car.id}`}>
-                  {car.color}, {car.power} KM
+                  {loc(car.color)}, {car.power} {t('veh.hp')}
                 </dd>
               </div>
               <div className="field">
-                <dt>Uwagi</dt>
+                <dt>{t('veh.notes')}</dt>
                 <dd className="ink ink--write" key={shots > idx ? `${car.id}-${current.id}` : 'none'}>
-                  {shots > idx ? current.note : '—'}
+                  {shots > idx ? loc(current.note) : '—'}
                 </dd>
               </div>
             </dl>
           </div>
 
           <div className="walk__shots box">
-            <span className="box__label">Oględziny · 5 zdjęć</span>
+            <span className="box__label">{t('shots.label')}</span>
             <ol className="shots">
               {film.checkpoints.map((c, i) => {
                 const taken = shots > i
@@ -297,7 +296,7 @@ export function Walkaround({
                       type="button"
                       className={`shot ${taken ? 'is-taken' : ''} ${idx === i ? 'is-current' : ''}`}
                       onClick={() => goTo(i)}
-                      aria-label={`${c.label}${taken ? ', zdjęcie zrobione' : ''}. Pokaż.`}
+                      aria-label={t('shots.aria', { label: loc(c.label), taken: taken ? t('shots.taken') : '' })}
                       aria-current={idx === i ? 'step' : undefined}
                     >
                       <span className="shot__photo">
@@ -313,7 +312,7 @@ export function Walkaround({
                         <span className="checkbox">
                           <Tick on={taken} />
                         </span>
-                        {c.label}
+                        {loc(c.label)}
                       </span>
                     </button>
                   </li>
@@ -325,35 +324,35 @@ export function Walkaround({
           <div className="walk__foot">
             <dl className="walk__terms">
               <div>
-                <dt>Kaucja</dt>
-                <dd>{zl(car.deposit)}</dd>
+                <dt>{t('foot.deposit')}</dt>
+                <dd>{money(car.deposit, lang)}</dd>
               </div>
               <div>
-                <dt>Limit</dt>
-                <dd>{car.kmPerDay} km / doba</dd>
+                <dt>{t('foot.limit')}</dt>
+                <dd>{t('fleet.kmPerDay', { km: car.kmPerDay })}</dd>
               </div>
               <div>
-                <dt>OC · AC · NNW</dt>
-                <dd>w cenie</dd>
+                <dt>{t('foot.insurance')}</dt>
+                <dd>{t('foot.included')}</dd>
               </div>
             </dl>
             <div className="price">
-              <span className="price__label">{car.model} od</span>
-              <span className="price__num">{zl(car.day)}</span>
-              <span className="price__unit">za dobę</span>
+              <span className="price__label">{t('foot.from', { model: car.model })}</span>
+              <span className="price__num">{money(car.day, lang)}</span>
+              <span className="price__unit">{t('foot.perDay')}</span>
             </div>
             <div className="walk__actions">
               <a className="btn" href="#rezerwacja">
-                Wybierz termin <Arrow />
+                {t('foot.pickDates')} <Arrow />
               </a>
               <a className="link" href="#flota">
-                Cała flota
+                {t('foot.wholeFleet')}
               </a>
             </div>
             <div className="signoff">
               <Signature on={signed} />
-              <span className="signoff__label">Podpis wydającego</span>
-              <Stamp word="WYDANO" date={today} on={signed} id="st-walk" />
+              <span className="signoff__label">{t('foot.signedBy')}</span>
+              <Stamp word={t('foot.stamp')} date={today} on={signed} id="st-walk" />
             </div>
           </div>
         </div>

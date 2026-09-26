@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { HALL, filmedById } from '../data'
 import { Arrow } from './Marks'
+import { useI18n } from '../i18n'
 
 // The service window of the hall, printed onto the same form as everything else:
 // the visitor writes the question in ballpoint, the answer comes back typed.
@@ -8,12 +9,6 @@ import { Arrow } from './Marks'
 
 type Turn = { role: 'user' | 'assistant'; content: string }
 type Mode = 'live' | 'offline' | null
-
-const SUGGESTIONS = (short: string) => [
-  `Ile kosztuje ${short} na weekend?`,
-  'Jaka jest kaucja i limit kilometrów?',
-  'Jak wygląda odbiór auta w hali?',
-]
 
 export function Assistant({
   open,
@@ -26,6 +21,7 @@ export function Assistant({
   carId: string
   triggerRef: React.RefObject<HTMLButtonElement | null>
 }) {
+  const { t, lang } = useI18n()
   const [turns, setTurns] = useState<Turn[]>([])
   const [draft, setDraft] = useState('')
   const [busy, setBusy] = useState(false)
@@ -75,7 +71,7 @@ export function Assistant({
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ messages: history }),
+          body: JSON.stringify({ messages: history, lang }),
           signal: controller.signal,
         })
         if (!res.ok || !res.body) throw new Error(String(res.status))
@@ -101,40 +97,39 @@ export function Assistant({
             }
           }
         }
-        if (!answer) throw new Error('pusta odpowiedź')
+        if (!answer) throw new Error('empty answer')
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
         setTurns(history)
-        setError('Okienko obsługi nie odpowiada. Spróbuj jeszcze raz albo wyślij zapytanie formularzem.')
+        setError(t('desk.error'))
       } finally {
         setBusy(false)
         abort.current = null
       }
     },
-    [busy, turns],
+    [busy, turns, lang, t],
   )
 
   const car = filmedById(carId)
+  const suggestions = [t('desk.seed1', { car: car.short }), t('desk.seed2'), t('desk.seed3')]
 
   return (
     <div id="desk" className={`desk ${open ? 'is-open' : ''}`} hidden={!open}>
       <div className="desk__sheet" role="dialog" aria-modal="false" aria-labelledby="desk-title">
         <div className="desk__head">
           <span className="box__label" id="desk-title">
-            Okienko obsługi
+            {t('desk.title')}
           </span>
           <button type="button" className="desk__close" onClick={onClose}>
-            Zamknij
+            {t('desk.close')}
           </button>
         </div>
-        <p className="desk__intro">
-          Odpowiada asystent AI — tylko o autach i ofercie {HALL.name}. Termin i cenę potwierdza obsługa hali.
-        </p>
+        <p className="desk__intro">{t('desk.intro', { hall: HALL.name })}</p>
 
         <div className="desk__log" ref={log} role="log" aria-live="polite" data-lenis-prevent>
           {turns.length === 0 && (
             <ul className="desk__seed">
-              {SUGGESTIONS(car.short).map((s) => (
+              {suggestions.map((s) => (
                 <li key={s}>
                   <button type="button" className="desk__seedBtn" onClick={() => ask(s)}>
                     {s}
@@ -144,16 +139,20 @@ export function Assistant({
             </ul>
           )}
 
-          {turns.map((t, i) =>
-            t.role === 'user' ? (
+          {turns.map((turn, i) =>
+            turn.role === 'user' ? (
               <p key={i} className="desk__q">
-                <span className="desk__n">Pyt. {String(Math.floor(i / 2) + 1).padStart(2, '0')}</span>
-                <span className="ink">{t.content}</span>
+                <span className="desk__n">
+                  {t('desk.q')} {String(Math.floor(i / 2) + 1).padStart(2, '0')}
+                </span>
+                <span className="ink">{turn.content}</span>
               </p>
             ) : (
               <p key={i} className={`desk__a ${busy && i === turns.length - 1 ? 'is-printing' : ''}`}>
-                <span className="desk__n">Odp. {String(Math.floor(i / 2) + 1).padStart(2, '0')}</span>
-                <span className="desk__text">{t.content}</span>
+                <span className="desk__n">
+                  {t('desk.a')} {String(Math.floor(i / 2) + 1).padStart(2, '0')}
+                </span>
+                <span className="desk__text">{turn.content}</span>
               </p>
             ),
           )}
@@ -169,26 +168,24 @@ export function Assistant({
           }}
         >
           <label className="f f--wide">
-            <span className="f__label">Twoje pytanie</span>
+            <span className="f__label">{t('desk.yourQuestion')}</span>
             <input
               ref={input}
               className="ink"
               value={draft}
               maxLength={600}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder="np. czym dojadę we dwoje w góry?"
-              aria-label="Pytanie do obsługi Hali 4"
+              placeholder={t('desk.placeholder')}
+              aria-label={t('desk.inputAria')}
             />
           </label>
           <button type="submit" className="btn btn--small" disabled={busy || !draft.trim()}>
-            {busy ? 'Czekaj' : 'Wyślij'} <Arrow />
+            {busy ? t('desk.wait') : t('desk.send')} <Arrow />
           </button>
         </form>
 
         {mode === 'offline' && (
-          <p className="desk__foot">
-            Asystent AI nie jest w tej chwili podłączony — odpowiadam z cennika, krótko i bez wyjątków.
-          </p>
+          <p className="desk__foot">{t('desk.offline')}</p>
         )}
       </div>
     </div>

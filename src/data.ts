@@ -4,6 +4,10 @@
 //
 // The four cars with a `film` are the ones we have real footage of; every fact about them
 // (body, colour, what each inspection note mentions) is read off that footage.
+//
+// Anything a visitor reads is a `Loc` pair — English first, Polish second — and is rendered
+// through `loc()` from i18n.tsx. Numbers, model names and file paths stay as they are.
+import type { Loc } from './format'
 
 // One inspection point of the walk-around: where the camera stops, what the film shows there,
 // and what the person filling in the protocol writes down.
@@ -13,7 +17,7 @@
 // at every stop, in the protocol strip and on the car card. Put the file in
 // `public/frames/<film.dir>/stills/` at 1600×900 (16:9, same framing as the film) and point at
 // it with an absolute path, e.g. still: '/frames/rs3/stills/front.webp'.
-export type Checkpoint = { id: string; label: string; t: number; note: string; still?: string }
+export type Checkpoint = { id: string; label: Loc; t: number; note: Loc; still?: string }
 
 // Camera position around the car for the top-view diagram.
 // a: degrees from the car's nose, turning towards its left side. r: distance in diagram units.
@@ -32,10 +36,10 @@ export type Car = {
   id: string
   model: string
   short: string // what the hero's picker and the chat call it
-  body: string
-  color: string
-  drive: string
-  gearbox: string
+  body: Loc
+  color: Loc
+  drive: Loc
+  gearbox: Loc
   power: number
   day: number // price per day, PLN
   deposit: number // PLN, refundable card hold
@@ -45,16 +49,77 @@ export type Car = {
   film?: Film
 }
 
+// Spec vocabulary, written once and shared by the cars that need it.
+const BODY = {
+  hatch5: { en: 'hatchback, 5 doors', pl: 'hatchback 5d' },
+  hatch3: { en: 'hatchback, 3 doors', pl: 'hatchback 3d' },
+  liftback: { en: 'liftback, 5 doors', pl: 'liftback 5d' },
+  coupe: { en: 'coupé, 2 doors', pl: 'coupé 2d' },
+  crossover: { en: 'crossover', pl: 'crossover' },
+} satisfies Record<string, Loc>
+
+const COLOR = {
+  red: { en: 'red', pl: 'czerwony' },
+  kyalamiGreen: { en: 'Kyalami green', pl: 'zielony Kyalami' },
+  grey: { en: 'grey', pl: 'szary' },
+  magneticGrey: { en: 'Magnetic grey', pl: 'szary Magnetic' },
+  black: { en: 'black', pl: 'czarny' },
+  white: { en: 'white', pl: 'biały' },
+} satisfies Record<string, Loc>
+
+const DRIVE = {
+  fourMotion: { en: 'AWD 4MOTION', pl: '4×4 4MOTION' },
+  quattro: { en: 'AWD quattro', pl: '4×4 quattro' },
+  xdrive: { en: 'AWD xDrive', pl: '4×4 xDrive' },
+  grFour: { en: 'AWD GR-Four', pl: '4×4 GR-Four' },
+  awd: { en: 'AWD', pl: '4×4' },
+  rear: { en: 'rear-wheel drive', pl: 'tył' },
+  front: { en: 'front-wheel drive', pl: 'przód' },
+} satisfies Record<string, Loc>
+
+const GEARBOX = {
+  dsg: { en: 'DSG automatic', pl: 'automat DSG' },
+  stronic: { en: 'S tronic automatic', pl: 'automat S tronic' },
+  pdk: { en: 'PDK automatic', pl: 'automat PDK' },
+  auto: { en: 'automatic', pl: 'automat' },
+  manual6: { en: '6-speed manual', pl: 'manual 6' },
+} satisfies Record<string, Loc>
+
 const golfFilm: Film = {
   dir: 'golf-r',
   duration: 10,
   source: 'golf8R.mp4',
   checkpoints: [
-    { id: 'front', label: 'Przód', t: 0, note: 'reflektory i zderzak bez uwag' },
-    { id: 'side', label: 'Lewy bok', t: 1.9, note: 'felgi czarne, bez rys' },
-    { id: 'rear', label: 'Tył', t: 3.4, note: '4 końcówki wydechu, bez uwag' },
-    { id: 'door', label: 'Drzwi', t: 6.2, note: 'próg i uszczelki bez uwag' },
-    { id: 'cabin', label: 'Wnętrze', t: 9.3, note: 'kokpit cyfrowy, czysto' },
+    {
+      id: 'front',
+      label: { en: 'Front', pl: 'Przód' },
+      t: 0,
+      note: { en: 'headlights and bumper, nothing to report', pl: 'reflektory i zderzak bez uwag' },
+    },
+    {
+      id: 'side',
+      label: { en: 'Left side', pl: 'Lewy bok' },
+      t: 1.9,
+      note: { en: 'black wheels, no scratches', pl: 'felgi czarne, bez rys' },
+    },
+    {
+      id: 'rear',
+      label: { en: 'Rear', pl: 'Tył' },
+      t: 3.4,
+      note: { en: 'four exhaust tips, nothing to report', pl: '4 końcówki wydechu, bez uwag' },
+    },
+    {
+      id: 'door',
+      label: { en: 'Door', pl: 'Drzwi' },
+      t: 6.2,
+      note: { en: 'sill and seals, nothing to report', pl: 'próg i uszczelki bez uwag' },
+    },
+    {
+      id: 'cabin',
+      label: { en: 'Cabin', pl: 'Wnętrze' },
+      t: 9.3,
+      note: { en: 'digital cockpit, clean', pl: 'kokpit cyfrowy, czysto' },
+    },
   ],
   orbit: [
     { t: 0, a: 32, r: 104 },
@@ -80,11 +145,37 @@ const rs3Film: Film = {
   duration: 10,
   source: 'Camera_panning_around_Audi_RS3_20260922231802.mp4',
   checkpoints: [
-    { id: 'front', label: 'Przód', t: 0.3, note: 'reflektory Matrix, splitter bez otarć' },
-    { id: 'side', label: 'Bok', t: 1.7, note: 'felgi 19", opony bez uszkodzeń' },
-    { id: 'rear', label: 'Tył', t: 4.2, note: 'dyfuzor i dwie owalne końcówki' },
-    { id: 'door', label: 'Drzwi', t: 6.3, note: 'próg i uszczelki bez uwag' },
-    { id: 'cabin', label: 'Wnętrze', t: 8.6, note: 'kubełki, kokpit cyfrowy' },
+    {
+      id: 'front',
+      label: { en: 'Front', pl: 'Przód' },
+      t: 0.3,
+      note: { en: 'Matrix headlights, splitter unscuffed', pl: 'reflektory Matrix, splitter bez otarć' },
+      still: '/frames/rs3/stills/front.webp',
+    },
+    {
+      id: 'side',
+      label: { en: 'Side', pl: 'Bok' },
+      t: 1.7,
+      note: { en: '19-inch wheels, tyres undamaged', pl: 'felgi 19", opony bez uszkodzeń' },
+    },
+    {
+      id: 'rear',
+      label: { en: 'Rear', pl: 'Tył' },
+      t: 4.2,
+      note: { en: 'diffuser and two oval tips', pl: 'dyfuzor i dwie owalne końcówki' },
+    },
+    {
+      id: 'door',
+      label: { en: 'Door', pl: 'Drzwi' },
+      t: 6.3,
+      note: { en: 'sill and seals, nothing to report', pl: 'próg i uszczelki bez uwag' },
+    },
+    {
+      id: 'cabin',
+      label: { en: 'Cabin', pl: 'Wnętrze' },
+      t: 8.6,
+      note: { en: 'bucket seats, digital cockpit', pl: 'kubełki, kokpit cyfrowy' },
+    },
   ],
   orbit: [
     { t: 0, a: 30, r: 104 },
@@ -110,11 +201,37 @@ const gt3rsFilm: Film = {
   duration: 10,
   source: 'Camera_filming_Porsche_in_garage_20260922231811.mp4',
   checkpoints: [
-    { id: 'front', label: 'Przód', t: 0.2, note: 'splitter i maska bez otarć' },
-    { id: 'side', label: 'Bok', t: 2.4, note: 'felgi kute, zaciski żółte' },
-    { id: 'rear', label: 'Tył', t: 4.2, note: 'skrzydło na łabędzich wspornikach' },
-    { id: 'door', label: 'Drzwi', t: 5.4, note: 'fotele kubełkowe, próg czysty' },
-    { id: 'cabin', label: 'Wnętrze', t: 8.2, note: 'obrotomierz pośrodku, alcantara' },
+    {
+      id: 'front',
+      label: { en: 'Front', pl: 'Przód' },
+      t: 0.2,
+      note: { en: 'splitter and bonnet unscuffed', pl: 'splitter i maska bez otarć' },
+      still: '/frames/gt3rs/stills/front.webp',
+    },
+    {
+      id: 'side',
+      label: { en: 'Side', pl: 'Bok' },
+      t: 2.4,
+      note: { en: 'forged wheels, yellow calipers', pl: 'felgi kute, zaciski żółte' },
+    },
+    {
+      id: 'rear',
+      label: { en: 'Rear', pl: 'Tył' },
+      t: 4.2,
+      note: { en: 'wing on swan-neck mounts', pl: 'skrzydło na łabędzich wspornikach' },
+    },
+    {
+      id: 'door',
+      label: { en: 'Door', pl: 'Drzwi' },
+      t: 5.4,
+      note: { en: 'bucket seats, sill clean', pl: 'fotele kubełkowe, próg czysty' },
+    },
+    {
+      id: 'cabin',
+      label: { en: 'Cabin', pl: 'Wnętrze' },
+      t: 8.2,
+      note: { en: 'rev counter in the middle, alcantara', pl: 'obrotomierz pośrodku, alcantara' },
+    },
   ],
   orbit: [
     { t: 0, a: 26, r: 104 },
@@ -140,11 +257,37 @@ const octaviaFilm: Film = {
   duration: 10,
   source: 'Skoda_Octavia_RS_camera_tour_20260922231834.mp4',
   checkpoints: [
-    { id: 'front', label: 'Przód', t: 0.4, note: 'grill i reflektory bez uwag' },
-    { id: 'side', label: 'Bok', t: 1.7, note: 'felgi 19" czarne, zaciski czerwone' },
-    { id: 'rear', label: 'Tył', t: 5.0, note: 'klapa i zderzak bez uwag' },
-    { id: 'door', label: 'Drzwi', t: 7.8, note: 'próg i uszczelki bez uwag' },
-    { id: 'cabin', label: 'Wnętrze', t: 9.4, note: 'kokpit cyfrowy, czysto' },
+    {
+      id: 'front',
+      label: { en: 'Front', pl: 'Przód' },
+      t: 0.4,
+      note: { en: 'grille and headlights, nothing to report', pl: 'grill i reflektory bez uwag' },
+      still: '/frames/octavia-rs/stills/front.webp',
+    },
+    {
+      id: 'side',
+      label: { en: 'Side', pl: 'Bok' },
+      t: 1.7,
+      note: { en: 'black 19-inch wheels, red calipers', pl: 'felgi 19" czarne, zaciski czerwone' },
+    },
+    {
+      id: 'rear',
+      label: { en: 'Rear', pl: 'Tył' },
+      t: 5.0,
+      note: { en: 'tailgate and bumper, nothing to report', pl: 'klapa i zderzak bez uwag' },
+    },
+    {
+      id: 'door',
+      label: { en: 'Door', pl: 'Drzwi' },
+      t: 7.8,
+      note: { en: 'sill and seals, nothing to report', pl: 'próg i uszczelki bez uwag' },
+    },
+    {
+      id: 'cabin',
+      label: { en: 'Cabin', pl: 'Wnętrze' },
+      t: 9.4,
+      note: { en: 'digital cockpit, clean', pl: 'kokpit cyfrowy, czysto' },
+    },
   ],
   orbit: [
     { t: 0, a: 34, r: 104 },
@@ -166,13 +309,13 @@ const octaviaFilm: Film = {
 }
 
 export const FLEET: Car[] = [
-  { id: 'golf-r', model: 'VW Golf R', short: 'Golf R', body: 'hatchback 5d', color: 'czerwony', drive: '4×4 4MOTION', gearbox: 'automat DSG', power: 320, day: 690, deposit: 5000, kmPerDay: 300, seats: 5, availableInDays: 0, film: golfFilm },
-  { id: 'rs3', model: 'Audi RS 3 Sportback', short: 'RS 3', body: 'hatchback 5d', color: 'zielony Kyalami', drive: '4×4 quattro', gearbox: 'automat S tronic', power: 400, day: 990, deposit: 8000, kmPerDay: 250, seats: 5, availableInDays: 3, film: rs3Film },
-  { id: 'gt3rs', model: 'Porsche 911 GT3 RS', short: '911 GT3 RS', body: 'coupé 2d', color: 'szary', drive: 'tył', gearbox: 'automat PDK', power: 525, day: 2900, deposit: 30000, kmPerDay: 150, seats: 2, availableInDays: 9, film: gt3rsFilm },
-  { id: 'octavia-rs', model: 'Škoda Octavia RS', short: 'Octavia RS', body: 'liftback 5d', color: 'czerwony', drive: 'przód', gearbox: 'automat DSG', power: 265, day: 450, deposit: 3000, kmPerDay: 400, seats: 5, availableInDays: 0, film: octaviaFilm },
-  { id: 'vz5', model: 'Cupra Formentor VZ5', short: 'Formentor VZ5', body: 'crossover', color: 'szary Magnetic', drive: '4×4', gearbox: 'automat DSG', power: 390, day: 890, deposit: 7000, kmPerDay: 250, seats: 5, availableInDays: 0 },
-  { id: 'm240i', model: 'BMW M240i xDrive Coupé', short: 'M240i', body: 'coupé 2d', color: 'czarny', drive: '4×4 xDrive', gearbox: 'automat', power: 374, day: 890, deposit: 7000, kmPerDay: 250, seats: 4, availableInDays: 6 },
-  { id: 'gr-yaris', model: 'Toyota GR Yaris', short: 'GR Yaris', body: 'hatchback 3d', color: 'biały', drive: '4×4 GR-Four', gearbox: 'manual 6', power: 261, day: 590, deposit: 5000, kmPerDay: 300, seats: 4, availableInDays: 1 },
+  { id: 'golf-r', model: 'VW Golf R', short: 'Golf R', body: BODY.hatch5, color: COLOR.red, drive: DRIVE.fourMotion, gearbox: GEARBOX.dsg, power: 320, day: 690, deposit: 5000, kmPerDay: 300, seats: 5, availableInDays: 0, film: golfFilm },
+  { id: 'rs3', model: 'Audi RS 3 Sportback', short: 'RS 3', body: BODY.hatch5, color: COLOR.kyalamiGreen, drive: DRIVE.quattro, gearbox: GEARBOX.stronic, power: 400, day: 990, deposit: 8000, kmPerDay: 250, seats: 5, availableInDays: 3, film: rs3Film },
+  { id: 'gt3rs', model: 'Porsche 911 GT3 RS', short: '911 GT3 RS', body: BODY.coupe, color: COLOR.grey, drive: DRIVE.rear, gearbox: GEARBOX.pdk, power: 525, day: 2900, deposit: 30000, kmPerDay: 150, seats: 2, availableInDays: 9, film: gt3rsFilm },
+  { id: 'octavia-rs', model: 'Škoda Octavia RS', short: 'Octavia RS', body: BODY.liftback, color: COLOR.red, drive: DRIVE.front, gearbox: GEARBOX.dsg, power: 265, day: 450, deposit: 3000, kmPerDay: 400, seats: 5, availableInDays: 0, film: octaviaFilm },
+  { id: 'vz5', model: 'Cupra Formentor VZ5', short: 'Formentor VZ5', body: BODY.crossover, color: COLOR.magneticGrey, drive: DRIVE.awd, gearbox: GEARBOX.dsg, power: 390, day: 890, deposit: 7000, kmPerDay: 250, seats: 5, availableInDays: 0 },
+  { id: 'm240i', model: 'BMW M240i xDrive Coupé', short: 'M240i', body: BODY.coupe, color: COLOR.black, drive: DRIVE.xdrive, gearbox: GEARBOX.auto, power: 374, day: 890, deposit: 7000, kmPerDay: 250, seats: 4, availableInDays: 6 },
+  { id: 'gr-yaris', model: 'Toyota GR Yaris', short: 'GR Yaris', body: BODY.hatch3, color: COLOR.white, drive: DRIVE.grFour, gearbox: GEARBOX.manual6, power: 261, day: 590, deposit: 5000, kmPerDay: 300, seats: 4, availableInDays: 1 },
 ]
 
 // Cars we can actually walk around on the page, in the order the hero offers them.
@@ -181,13 +324,13 @@ export const carById = (id: string) => FLEET.find((c) => c.id === id) ?? FLEET[0
 export const filmedById = (id: string) => FILMED.find((c) => c.id === id) ?? FILMED[0]
 
 // Rental lengths. `perDay` multiplies the car's day price; weekend is a flat multiple of it.
-export type Tier = { id: string; label: string; detail: string; days: number; perDay: number }
+export type Tier = { id: string; label: Loc; detail: Loc; days: number; perDay: number }
 export const TIERS: Tier[] = [
-  { id: 'd1', label: '1 doba', detail: '24 godziny', days: 1, perDay: 1 },
-  { id: 'd3', label: '2–3 doby', detail: 'cena za każdą dobę', days: 3, perDay: 0.9 },
-  { id: 'wknd', label: 'Weekend', detail: 'pt 16:00 – pn 10:00', days: 2.5, perDay: 0.88 },
-  { id: 'd7', label: '7 dni', detail: 'tydzień', days: 7, perDay: 0.75 },
-  { id: 'd30', label: '30 dni', detail: 'miesiąc', days: 30, perDay: 0.55 },
+  { id: 'd1', label: { en: '1 day', pl: '1 doba' }, detail: { en: '24 hours', pl: '24 godziny' }, days: 1, perDay: 1 },
+  { id: 'd3', label: { en: '2–3 days', pl: '2–3 doby' }, detail: { en: 'price for each day', pl: 'cena za każdą dobę' }, days: 3, perDay: 0.9 },
+  { id: 'wknd', label: { en: 'Weekend', pl: 'Weekend' }, detail: { en: 'Fri 16:00 – Mon 10:00', pl: 'pt 16:00 – pn 10:00' }, days: 2.5, perDay: 0.88 },
+  { id: 'd7', label: { en: '7 days', pl: '7 dni' }, detail: { en: 'a week', pl: 'tydzień' }, days: 7, perDay: 0.75 },
+  { id: 'd30', label: { en: '30 days', pl: '30 dni' }, detail: { en: 'a month', pl: 'miesiąc' }, days: 30, perDay: 0.55 },
 ]
 
 export const EXTRA_KM = 1.5 // PLN per km over the limit
@@ -205,9 +348,6 @@ export function priceFor(car: Car, days: number) {
   return roundTo10(car.day * factor * days)
 }
 
-export const zl = (n: number) =>
-  new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(n).replace(/ /g, ' ') + ' zł'
-
 export const dateFromToday = (days: number) => {
   const d = new Date()
   d.setDate(d.getDate() + days)
@@ -218,6 +358,6 @@ export const fmtDate = (d: Date) =>
 
 export const HALL = {
   name: 'Hala 4',
-  address: 'ul. Magazynowa 4, Warszawa',
-  hours: 'pn–sb 8:00–20:00',
+  address: { en: '4 Magazynowa Street, Warsaw', pl: 'ul. Magazynowa 4, Warszawa' } satisfies Loc,
+  hours: { en: 'Mon–Sat 8:00–20:00', pl: 'pn–sb 8:00–20:00' } satisfies Loc,
 }

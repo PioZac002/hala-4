@@ -8,8 +8,10 @@ import { Fleet } from './sections/Fleet'
 import { Handover } from './sections/Handover'
 import { Stub } from './sections/Stub'
 import { scrollToId, startSmoothScroll, useReducedMotion } from './scroll'
+import { useI18n } from './i18n'
 
 export default function App() {
+  const { t } = useI18n()
   const reduced = useReducedMotion()
   const [carId, setCarId] = useState('golf-r')
   const [serial, setSerial] = useState(417)
@@ -26,7 +28,7 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#rezerwacja">
-        Przejdź do rezerwacji
+        {t('skip.booking')}
       </a>
       <Masthead serial={serial} asking={asking} onAsk={() => setAsking((a) => !a)} askRef={askBtn} />
       <main id="top">

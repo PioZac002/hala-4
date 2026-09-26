@@ -1,7 +1,9 @@
 import { HALL } from '../data'
+import { useI18n } from '../i18n'
 import { Scissors } from '../components/Marks'
 
 export function Stub() {
+  const { t, loc } = useI18n()
   return (
     <footer className="stub">
       <div className="stub__perf" aria-hidden="true">
@@ -11,22 +13,19 @@ export function Stub() {
         <p className="stub__mark">Hala&nbsp;4</p>
         <dl className="stub__facts">
           <div>
-            <dt>Adres</dt>
-            <dd>{HALL.address}</dd>
+            <dt>{t('stub.address')}</dt>
+            <dd>{loc(HALL.address)}</dd>
           </div>
           <div>
-            <dt>Godziny</dt>
-            <dd>{HALL.hours}</dd>
+            <dt>{t('stub.hours')}</dt>
+            <dd>{loc(HALL.hours)}</dd>
           </div>
           <div>
-            <dt>Druk</dt>
-            <dd>H4/P-01, trzy egzemplarze</dd>
+            <dt>{t('stub.form')}</dt>
+            <dd>{t('stub.formValue')}</dd>
           </div>
         </dl>
-        <p className="stub__note">
-          Hala 4 to projekt koncepcyjny. Nazwa, adres, flota i ceny są przykładowe, a nazwy modeli należą do ich producentów.
-          Filmy z obchodu to cztery materiały źródłowe nakręcone w hali; klatki wycięto z nich bez retuszu.
-        </p>
+        <p className="stub__note">{t('stub.note')}</p>
       </div>
     </footer>
   )

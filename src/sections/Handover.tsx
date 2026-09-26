@@ -1,28 +1,31 @@
-const OUT = [
-  { h: 'Rezerwacja', p: 'Wybierasz auto i termin w formularzu poniżej. Oddzwaniamy, żeby potwierdzić godzinę odbioru.' },
-  { h: 'Obchód', p: 'W hali obchodzimy auto razem. Pięć zdjęć, stan licznika i paliwa trafiają do protokołu.' },
-  { h: 'Podpis', p: 'Podpisujemy protokół oboje. Dostajesz kluczyk i różową kopię z cennikiem i warunkami.' },
+import { useI18n, type Key } from '../i18n'
+
+const OUT: [Key, Key][] = [
+  ['flow.out1.h', 'flow.out1.p'],
+  ['flow.out2.h', 'flow.out2.p'],
+  ['flow.out3.h', 'flow.out3.p'],
 ]
 
-const BACK = [
-  { h: 'Powrót do hali', p: 'Wracasz z pełnym bakiem, w godzinach z rezerwacji albo po uzgodnieniu.' },
-  { h: 'Ten sam obchód', p: 'Robimy te same pięć ujęć i porównujemy je ze zdjęciami z wydania.' },
-  { h: 'Drugi podpis', p: 'Podpisujemy ten sam protokół drugi raz. Blokada kaucji znika z karty.' },
+const BACK: [Key, Key][] = [
+  ['flow.back1.h', 'flow.back1.p'],
+  ['flow.back2.h', 'flow.back2.p'],
+  ['flow.back3.h', 'flow.back3.p'],
 ]
 
-function Column({ title, steps, start }: { title: string; steps: typeof OUT; start: number }) {
+function Column({ title, steps, start }: { title: string; steps: [Key, Key][]; start: number }) {
+  const { t } = useI18n()
   return (
     <div className="flow__col">
       <h3 className="flow__title">{title}</h3>
       <ol className="flow__steps" start={start}>
-        {steps.map((s, i) => (
-          <li key={s.h}>
+        {steps.map(([head, body], i) => (
+          <li key={head}>
             <span className="flow__n" aria-hidden="true">
               {start + i}
             </span>
             <div>
-              <h4>{s.h}</h4>
-              <p>{s.p}</p>
+              <h4>{t(head)}</h4>
+              <p>{t(body)}</p>
             </div>
           </li>
         ))}
@@ -32,21 +35,19 @@ function Column({ title, steps, start }: { title: string; steps: typeof OUT; sta
 }
 
 export function Handover() {
+  const { t } = useI18n()
   return (
     <section id="odbior" className="sheet-section flow" aria-labelledby="flow-title">
       <div className="section-head">
         <h2 id="flow-title" className="display display--section">
-          Odbiór i zwrot
+          {t('flow.title')}
         </h2>
-        <p className="section-lead">
-          Jeden protokół, dwa podpisy. Przy zwrocie porównujemy auto ze zdjęciami z wydania, więc nie ma sporu o to, skąd się
-          wzięła rysa.
-        </p>
+        <p className="section-lead">{t('flow.lead')}</p>
       </div>
       <div className="flow__grid">
-        <Column title="Wydanie" steps={OUT} start={1} />
+        <Column title={t('flow.out')} steps={OUT} start={1} />
         <div className="flow__fold" aria-hidden="true" />
-        <Column title="Zwrot" steps={BACK} start={4} />
+        <Column title={t('flow.back')} steps={BACK} start={4} />
       </div>
     </section>
   )

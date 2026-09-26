@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { useI18n } from '../i18n'
 import { DIAGRAM } from '../hero/timeline'
 
 // Ink and print marks shared across the protocol: ticks, stamp, signature, clip, icons.
@@ -20,8 +21,14 @@ export function Clip() {
 }
 
 export function Stamp({ word, date, on, id }: { word: string; date: string; on: boolean; id: string }) {
+  const { t } = useI18n()
   return (
-    <svg className={`stamp ${on ? 'is-on' : ''}`} viewBox="0 0 220 112" role="img" aria-label={`Pieczątka: ${word}, ${date}`}>
+    <svg
+      className={`stamp ${on ? 'is-on' : ''}`}
+      viewBox="0 0 220 112"
+      role="img"
+      aria-label={t('marks.stampAria', { word, date })}
+    >
       <defs>
         <filter id={`${id}-ink`} x="-5%" y="-5%" width="110%" height="110%">
           <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n" />
@@ -55,6 +62,7 @@ export function Signature({ on }: { on: boolean }) {
 
 export function CarOutline() {
   // Top view, nose up — the pictogram every paper handover protocol carries.
+  const { t } = useI18n()
   return (
     <g className="car">
       <path className="car__body" d="M93 77c8-7 46-7 54 0 8 6 11 16 11 28v108c0 11-5 17-13 17H95c-8 0-13-6-13-17V105c0-12 3-22 11-28Z" />
@@ -67,8 +75,12 @@ export function CarOutline() {
       <rect className="car__wheel" x="157" y="92" width="7" height="25" rx="2" />
       <rect className="car__wheel" x="76" y="186" width="7" height="25" rx="2" />
       <rect className="car__wheel" x="157" y="186" width="7" height="25" rx="2" />
-      <text className="car__label" x={DIAGRAM.cx} y="54" textAnchor="middle">PRZÓD</text>
-      <text className="car__label" x={DIAGRAM.cx} y="258" textAnchor="middle">TYŁ</text>
+      <text className="car__label" x={DIAGRAM.cx} y="54" textAnchor="middle">
+        {t('marks.front')}
+      </text>
+      <text className="car__label" x={DIAGRAM.cx} y="258" textAnchor="middle">
+        {t('marks.rear')}
+      </text>
     </g>
   )
 }

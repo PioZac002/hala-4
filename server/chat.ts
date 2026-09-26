@@ -6,6 +6,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { SYSTEM } from './knowledge'
 import { offlineAnswer } from './offline'
+import type { Lang } from '../src/format'
 
 const MODEL = 'claude-opus-5'
 const MAX_TURNS = 12 // how much of a conversation we carry back to the model
@@ -54,8 +55,8 @@ function rateLimited(ip: string) {
   return hits.length > RATE.max
 }
 
-function offlineStream(question: string, reason: 'no-key' | 'error') {
-  const text = offlineAnswer(question)
+function offlineStream(question: string, reason: 'no-key' | 'error', lang: Lang) {
+  const text = offlineAnswer(question, lang)
   return new Response(
     new ReadableStream({
       start(controller) {
@@ -77,8 +78,12 @@ export async function chat(request: Request): Promise<Response> {
   if (rateLimited(ip)) return bad('Za dużo pytań naraz. Spróbuj za chwilę.', 429)
 
   let turns: Turn[] | null = null
+  let lang: Lang = 'en'
   try {
-    turns = parseTurns(await request.json())
+    const body = await request.json()
+    turns = parseTurns(body)
+    // The desk answers in the language the page is printed in.
+    if ((body as { lang?: unknown })?.lang === 'pl') lang = 'pl'
   } catch {
     return bad('Nieczytelne zapytanie')
   }
@@ -86,7 +91,7 @@ export async function chat(request: Request): Promise<Response> {
   const question = turns[turns.length - 1].content
 
   const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return offlineStream(question, 'no-key')
+  if (!apiKey) return offlineStream(question, 'no-key', lang)
 
   const client = new Anthropic({ apiKey })
   let stream: ReturnType<typeof client.messages.stream>
@@ -96,13 +101,13 @@ export async function chat(request: Request): Promise<Response> {
       max_tokens: MAX_TOKENS,
       // The fleet and the price list are the same on every request: cache them, and keep
       // effort low — this is a front-desk answer, not a research task.
-      system: [{ type: 'text', text: SYSTEM(), cache_control: { type: 'ephemeral' } }],
+      system: [{ type: 'text', text: SYSTEM(lang), cache_control: { type: 'ephemeral' } }],
       output_config: { effort: 'low' },
       messages: turns.map((t) => ({ role: t.role, content: t.content })),
     })
   } catch (err) {
     console.error('[chat] nie udało się otworzyć strumienia', err)
-    return offlineStream(question, 'error')
+    return offlineStream(question, 'error', lang)
   }
 
   const body = new ReadableStream({

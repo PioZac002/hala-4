@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FLEET, dateFromToday, fmtDate, priceFor, zl } from '../data'
+import { FLEET, dateFromToday, fmtDate, priceFor } from '../data'
+import { dayCount, money, useI18n } from '../i18n'
 import { Arrow, Signature, Stamp } from '../components/Marks'
 import { CharBoxes, dateToDigits, digitsToDate } from '../components/CharBoxes'
 
@@ -24,6 +25,7 @@ export function Booking({
   onFiled: () => void
   onAsk: () => void
 }) {
+  const { t, lang } = useI18n()
   const car = FLEET.find((c) => c.id === carId) ?? FLEET[0]
   const [from, setFrom] = useState(dateToDigits(dateFromToday(1)))
   const [to, setTo] = useState(dateToDigits(dateFromToday(4)))
@@ -40,13 +42,13 @@ export function Booking({
 
   const validate = (): Errors => {
     const e: Errors = {}
-    if (!fromDate) e.from = 'Wpisz datę odbioru jako dzień, miesiąc i rok, np. 03.10.2026.'
-    else if (fromDate < startOfToday()) e.from = 'Odbiór najwcześniej dziś.'
-    if (!toDate) e.to = 'Wpisz datę zwrotu jako dzień, miesiąc i rok.'
-    else if (days < 1) e.to = 'Zwrot musi być co najmniej dzień po odbiorze.'
-    if (name.trim().split(/\s+/).length < 2) e.name = 'Wpisz imię i nazwisko, tak jak w prawie jazdy.'
-    if (phone.length < 9) e.phone = 'Numer ma za mało cyfr. Oddzwonimy na niego, żeby potwierdzić termin.'
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Adres e-mail wygląda na niepełny. Możesz go też usunąć.'
+    if (!fromDate) e.from = t('book.err.fromFormat')
+    else if (fromDate < startOfToday()) e.from = t('book.err.fromPast')
+    if (!toDate) e.to = t('book.err.toFormat')
+    else if (days < 1) e.to = t('book.err.toOrder')
+    if (name.trim().split(/\s+/).length < 2) e.name = t('book.err.name')
+    if (phone.length < 9) e.phone = t('book.err.phone')
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = t('book.err.email')
     return e
   }
 
@@ -75,12 +77,12 @@ export function Booking({
     <section id="rezerwacja" className="sheet-section booking" aria-labelledby="book-title">
       <div className="section-head">
         <h2 id="book-title" className="display display--section">
-          Rezerwacja
+          {t('book.title')}
         </h2>
         <p className="section-lead">
-          Wypełnij jak protokół. Oddzwonimy, żeby potwierdzić termin i godzinę odbioru w hali. Nie wiesz, które auto?{' '}
+          {t('book.lead')}{' '}
           <button type="button" className="link" onClick={onAsk}>
-            Zapytaj obsługi
+            {t('book.askDesk')}
           </button>
           .
         </p>
@@ -89,22 +91,22 @@ export function Booking({
       <form className="booking__form" onSubmit={submit} noValidate>
         <div className="booking__fields">
           <label className="f f--wide">
-            <span className="f__label">Auto</span>
+            <span className="f__label">{t('book.car')}</span>
             <select className="ink" value={car.id} onChange={(e) => onCar(e.target.value)}>
               {FLEET.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.model} · {zl(c.day)} / doba
+                  {t('book.perDayOption', { model: c.model, amount: money(c.day, lang) })}
                 </option>
               ))}
             </select>
           </label>
           <label className={`f ${errors.from ? 'is-err' : ''}`}>
             <span className="f__label">
-              Odbiór <i>dzień · miesiąc · rok</i>
+              {t('book.pickUp')} <i>{t('book.dmy')}</i>
             </span>
             <CharBoxes
               id="f-from"
-              label="Data odbioru, dzień miesiąc rok"
+              label={t('book.pickUpAria')}
               value={from}
               onChange={setFrom}
               groups={[2, 2, 4]}
@@ -116,11 +118,11 @@ export function Booking({
           </label>
           <label className={`f ${errors.to ? 'is-err' : ''}`}>
             <span className="f__label">
-              Zwrot <i>dzień · miesiąc · rok</i>
+              {t('book.return')} <i>{t('book.dmy')}</i>
             </span>
             <CharBoxes
               id="f-to"
-              label="Data zwrotu, dzień miesiąc rok"
+              label={t('book.returnAria')}
               value={to}
               onChange={setTo}
               groups={[2, 2, 4]}
@@ -131,17 +133,17 @@ export function Booking({
             {err('to')}
           </label>
           <label className={`f f--wide ${errors.name ? 'is-err' : ''}`}>
-            <span className="f__label">Imię i nazwisko</span>
+            <span className="f__label">{t('book.name')}</span>
             <input id="f-name" className="ink" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} {...aria('name')} />
             {err('name')}
           </label>
           <label className={`f ${errors.phone ? 'is-err' : ''}`}>
-            <span className="f__label">Telefon</span>
+            <span className="f__label">{t('book.phone')}</span>
             <span className="f__prefixed">
               <span className="f__prefix">+48</span>
               <CharBoxes
                 id="f-phone"
-                label="Numer telefonu, 9 cyfr"
+                label={t('book.phoneAria')}
                 value={phone}
                 onChange={setPhone}
                 normalize={(d) => (d.length > 9 && d.startsWith('48') ? d.slice(2) : d)}
@@ -155,54 +157,57 @@ export function Booking({
           </label>
           <label className={`f ${errors.email ? 'is-err' : ''}`}>
             <span className="f__label">
-              E-mail <i>nieobowiązkowo</i>
+              {t('book.email')} <i>{t('book.optional')}</i>
             </span>
             <input id="f-email" className="ink" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} {...aria('email')} />
             {err('email')}
           </label>
           <label className="f f--wide">
             <span className="f__label">
-              Uwagi <i>np. dowóz, fotelik, godzina</i>
+              {t('book.notes')} <i>{t('book.notesHint')}</i>
             </span>
             <textarea className="ink" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
           </label>
         </div>
 
         <aside className="booking__sum box" aria-live="polite">
-          <span className="box__label">Rozliczenie</span>
+          <span className="box__label">{t('book.settlement')}</span>
           <dl>
             <div>
-              <dt>Okres</dt>
-              <dd>{days > 0 ? `${days} ${days === 1 ? 'doba' : days < 5 ? 'doby' : 'dób'}` : '—'}</dd>
+              <dt>{t('book.period')}</dt>
+              <dd>{days > 0 ? dayCount(days, lang) : '—'}</dd>
             </div>
             <div>
-              <dt>Limit km</dt>
-              <dd>{days > 0 ? `${(days * car.kmPerDay).toLocaleString('pl-PL')} km` : '—'}</dd>
+              <dt>{t('book.kmLimit')}</dt>
+              <dd>
+                {days > 0
+                  ? `${(days * car.kmPerDay).toLocaleString(lang === 'pl' ? 'pl-PL' : 'en-GB').replace(/[\u00a0,]/g, ' ')} km`
+                  : '—'}
+              </dd>
             </div>
             <div>
-              <dt>Kaucja</dt>
-              <dd>{zl(car.deposit)}</dd>
+              <dt>{t('book.deposit')}</dt>
+              <dd>{money(car.deposit, lang)}</dd>
             </div>
             <div className="sum__total">
-              <dt>Najem</dt>
-              <dd>{days > 0 ? zl(priceFor(car, days)) : '—'}</dd>
+              <dt>{t('book.rental')}</dt>
+              <dd>{days > 0 ? money(priceFor(car, days), lang) : '—'}</dd>
             </div>
           </dl>
 
           <div className="booking__sign">
             <Signature on={filed !== null} />
-            <span className="signoff__label">Podpis najemcy</span>
-            <Stamp word="PRZYJĘTO" date={fmtDate(new Date())} on={filed !== null} id="st-book" />
+            <span className="signoff__label">{t('book.signedBy')}</span>
+            <Stamp word={t('book.stamp')} date={fmtDate(new Date())} on={filed !== null} id="st-book" />
           </div>
 
           {filed === null ? (
             <button type="submit" className="btn btn--block">
-              Podpisz i wyślij zapytanie <Arrow />
+              {t('book.submit')} <Arrow />
             </button>
           ) : (
             <p className="booking__done" role="status">
-              Zapytanie <b className="serial">Nr {String(filed).padStart(6, '0')}</b> przyjęte. To projekt koncepcyjny, więc
-              formularz niczego nie wysłał.
+              {t('book.done', { no: `${t('mast.no')} ${String(filed).padStart(6, '0')}` })}
             </p>
           )}
         </aside>

@@ -1,4 +1,5 @@
-import { FLEET, dateFromToday, fmtDate, zl, type Car } from '../data'
+import { FLEET, dateFromToday, fmtDate, type Car } from '../data'
+import { money, useI18n, type Lang } from '../i18n'
 import { Arrow, CarOutline, Clip } from '../components/Marks'
 import { setFor, stillUrl } from '../hero/frames'
 import { scrollToId } from '../scroll'
@@ -7,17 +8,22 @@ import { scrollToId } from '../scroll'
 // protocol clips in as photo 2 — so the card and the hero never show two different cars.
 const cardPhoto = (car: Car) => (car.film ? stillUrl(setFor(car.film), car.film, 1) : null)
 
-const availability = (c: Car) => (c.availableInDays === 0 ? 'dostępny od ręki' : `wolny od ${fmtDate(dateFromToday(c.availableInDays)).slice(0, 5)}`)
+type T = ReturnType<typeof useI18n>['t']
+const availability = (c: Car, t: T) =>
+  c.availableInDays === 0
+    ? t('fleet.availableNow')
+    : t('fleet.availableFrom', { date: fmtDate(dateFromToday(c.availableInDays)).slice(0, 5) })
 
 function VehicleCard({ car, onBook }: { car: Car; onBook: () => void }) {
+  const { t, loc, lang } = useI18n()
   const photo = cardPhoto(car)
   return (
     <article className="card box" aria-live="polite">
-      <span className="box__label">Karta pojazdu</span>
+      <span className="box__label">{t('fleet.card')}</span>
       <div className="card__photo">
         {photo ? (
           <>
-            <img src={photo} alt={`${car.model}, zdjęcie z obchodu`} loading="lazy" />
+            <img src={photo} alt={t('fleet.photoAlt', { model: car.model })} loading="lazy" />
             <Clip />
           </>
         ) : (
@@ -25,7 +31,7 @@ function VehicleCard({ car, onBook }: { car: Car; onBook: () => void }) {
             <svg viewBox={`40 40 160 230`} aria-hidden="true" className="card__pictogram">
               <CarOutline />
             </svg>
-            <span>Zdjęcia tego auta dołączymy do protokołu przy odbiorze.</span>
+            <span>{t('fleet.noPhoto')}</span>
           </div>
         )}
       </div>
@@ -34,41 +40,41 @@ function VehicleCard({ car, onBook }: { car: Car; onBook: () => void }) {
       </h3>
       <dl className="card__specs">
         <div>
-          <dt>Nadwozie</dt>
-          <dd>{car.body}</dd>
+          <dt>{t('fleet.body')}</dt>
+          <dd>{loc(car.body)}</dd>
         </div>
         <div>
-          <dt>Napęd</dt>
-          <dd>{car.drive}</dd>
+          <dt>{t('fleet.drive')}</dt>
+          <dd>{loc(car.drive)}</dd>
         </div>
         <div>
-          <dt>Skrzynia</dt>
-          <dd>{car.gearbox}</dd>
+          <dt>{t('fleet.gearbox')}</dt>
+          <dd>{loc(car.gearbox)}</dd>
         </div>
         <div>
-          <dt>Moc</dt>
-          <dd>{car.power} KM</dd>
+          <dt>{t('fleet.power')}</dt>
+          <dd>{car.power} {t('veh.hp')}</dd>
         </div>
         <div>
-          <dt>Miejsca</dt>
+          <dt>{t('fleet.seats')}</dt>
           <dd>{car.seats}</dd>
         </div>
         <div>
-          <dt>Limit</dt>
-          <dd>{car.kmPerDay} km / doba</dd>
+          <dt>{t('fleet.limit')}</dt>
+          <dd>{t('fleet.kmPerDay', { km: car.kmPerDay })}</dd>
         </div>
       </dl>
       <div className="card__foot">
         <p className="card__price">
-          <span className="price__num">{zl(car.day)}</span> za dobę
-          <span className="card__avail ink">{availability(car)}</span>
+          <span className="price__num">{money(car.day, lang)}</span> {t('foot.perDay')}
+          <span className="card__avail ink">{availability(car, t)}</span>
         </p>
         <button type="button" className="btn" onClick={onBook}>
-          Rezerwuj to auto <Arrow />
+          {t('fleet.bookThis')} <Arrow />
         </button>
         {car.film && (
           <button type="button" className="link card__walk" onClick={() => scrollToId('top')}>
-            Obejrzyj obchód
+            {t('fleet.watchWalk')}
           </button>
         )}
       </div>
@@ -77,35 +83,33 @@ function VehicleCard({ car, onBook }: { car: Car; onBook: () => void }) {
 }
 
 export function Fleet({ carId, onSelect, onBook }: { carId: string; onSelect: (id: string) => void; onBook: (id: string) => void }) {
+  const { t, loc, lang } = useI18n()
   const car = FLEET.find((c) => c.id === carId) ?? FLEET[0]
   return (
     <section id="flota" className="sheet-section fleet" aria-labelledby="fleet-title">
       <div className="section-head">
         <h2 id="fleet-title" className="display display--section">
-          Flota
+          {t('fleet.title')}
         </h2>
-        <p className="section-lead">
-          Siedem aut do jazdy dla przyjemności. Cztery obchodzimy z filmu na górze strony. Wybierz wiersz, żeby
-          zobaczyć kartę auta.
-        </p>
+        <p className="section-lead">{t('fleet.lead')}</p>
       </div>
 
       <div className="fleet__layout">
         <VehicleCard car={car} onBook={() => onBook(car.id)} />
 
         <div className="register box">
-          <span className="box__label">Rejestr pojazdów</span>
+          <span className="box__label">{t('fleet.register')}</span>
           <table>
-            <caption className="sr-only">Flota Hali 4 z ceną za dobę i dostępnością</caption>
+            <caption className="sr-only">{t('fleet.caption')}</caption>
             <thead>
               <tr>
-                <th scope="col">Lp.</th>
-                <th scope="col">Model</th>
-                <th scope="col" className="col-body">Nadwozie</th>
-                <th scope="col" className="col-drive">Napęd</th>
-                <th scope="col" className="num">Moc</th>
-                <th scope="col" className="num">Doba</th>
-                <th scope="col" className="col-avail">Dostępność</th>
+                <th scope="col">{t('fleet.no')}</th>
+                <th scope="col">{t('fleet.model')}</th>
+                <th scope="col" className="col-body">{t('fleet.body')}</th>
+                <th scope="col" className="col-drive">{t('fleet.drive')}</th>
+                <th scope="col" className="num">{t('fleet.power')}</th>
+                <th scope="col" className="num">{t('fleet.day')}</th>
+                <th scope="col" className="col-avail">{t('fleet.availability')}</th>
               </tr>
             </thead>
             <tbody>
@@ -124,17 +128,17 @@ export function Fleet({ carId, onSelect, onBook }: { carId: string; onSelect: (i
                         )}
                       </button>
                     </th>
-                    <td className="col-body">{c.body}</td>
-                    <td className="col-drive">{c.drive}</td>
-                    <td className="num">{c.power} KM</td>
-                    <td className="num">{zl(c.day)}</td>
-                    <td className="col-avail ink">{availability(c)}</td>
+                    <td className="col-body">{loc(c.body)}</td>
+                    <td className="col-drive">{loc(c.drive)}</td>
+                    <td className="num">{c.power} {t('veh.hp')}</td>
+                    <td className="num">{money(c.day, lang)}</td>
+                    <td className="col-avail ink">{availability(c, t)}</td>
                   </tr>
                 )
               })}
             </tbody>
           </table>
-          <p className="footnote">Flota, ceny i terminy są przykładowe. Moc według danych producentów.</p>
+          <p className="footnote">{t('fleet.footnote')}</p>
         </div>
       </div>
     </section>
