@@ -9,7 +9,7 @@ tsconfig.tsbuildinfo
 # IDE
 .idea/
 
-# Materiały robocze, niepotrzebne do uruchomienia strony
+# Working material the site does not need in order to run
 media-exports/
 .impeccable/review/
 .impeccable/hook.cache.json
