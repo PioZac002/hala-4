@@ -1,6 +1,6 @@
 // The answer desk without the model behind it.
 //
-// When ANTHROPIC_API_KEY is missing (local checkout, static hosting, API outage), the widget
+// When CHAT_API_KEY is missing (local checkout, static hosting, API outage), the widget
 // still answers the questions the page can answer from its own price list. It reads the same
 // src/data.ts, never invents anything, and says plainly that it is the short version.
 // It matches keywords in both languages and answers in the one the page is printed in.

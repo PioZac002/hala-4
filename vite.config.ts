@@ -3,14 +3,14 @@ import react from '@vitejs/plugin-react'
 
 // `npm run dev` serves the answer desk from the same code the deployed function uses
 // (api/chat.ts → server/chat.ts), so the widget behaves locally exactly as it will in
-// production. ANTHROPIC_API_KEY is read from .env and never leaves the server.
+// production. The provider keys are read from .env and never leave the server.
 function answerDesk(mode: string): Plugin {
   return {
     name: 'hala4-answer-desk',
     config() {
       const env = loadEnv(mode, process.cwd(), '')
-      if (!process.env.ANTHROPIC_API_KEY && env.ANTHROPIC_API_KEY) {
-        process.env.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY
+      for (const key of ['CHAT_API_KEY', 'GROQ_API_KEY', 'CHAT_BASE_URL', 'CHAT_MODEL']) {
+        if (!process.env[key] && env[key]) process.env[key] = env[key]
       }
     },
     configureServer(server) {

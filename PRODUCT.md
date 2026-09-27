@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Vite + React + TypeScript + React Three Fiber (user asked for R3F explicitly). Hero is a WebGL scroll-scrubbed video (user chose it over a plain loop or plain `<video>`). One server-side function only — `/api/chat`, the answer desk (Claude API, key server-side, serverless-style handler shared by the Vite dev server and the deployed function). The booking form is still front-end only.
+Vite + React + TypeScript + React Three Fiber (user asked for R3F explicitly). Hero is a WebGL scroll-scrubbed video (user chose it over a plain loop or plain `<video>`). One server-side function only — `/api/chat`, the answer desk (any provider speaking the OpenAI chat-completions protocol, set by `CHAT_BASE_URL`/`CHAT_MODEL`/`CHAT_API_KEY`; Groq's free tier by default, key server-side, serverless-style handler shared by the Vite dev server and the deployed function). The booking form is still front-end only.
 
 ## Users
 

@@ -1,17 +1,23 @@
 // The answer desk: one Web-standard handler, used by the Vite dev server and by the
-// deployed function alike (api/chat.ts). POST { messages } → text/event-stream.
+// deployed function alike (api/chat.ts). POST { messages, lang } → text/event-stream.
+//
+// The model is reached over the OpenAI-compatible chat-completions protocol, so the provider
+// is three environment variables rather than a dependency. The default is Groq's free tier
+// (gpt-oss-120b, no card, 1000 requests a day); Gemini, OpenRouter, OpenAI and anything else
+// speaking the same protocol need only CHAT_BASE_URL and CHAT_MODEL. With no key at all the
+// desk falls back to server/offline.ts and still answers from the price list.
 //
 // The API key stays here. The browser never sees it, and the model only ever gets the
 // system prompt from server/knowledge.ts, which is built out of the page's own price list.
-import Anthropic from '@anthropic-ai/sdk'
 import { SYSTEM } from './knowledge'
 import { offlineAnswer } from './offline'
 import type { Lang } from '../src/format'
 
-const MODEL = 'claude-opus-5'
+const BASE_URL = process.env.CHAT_BASE_URL ?? 'https://api.groq.com/openai/v1'
+const MODEL = process.env.CHAT_MODEL ?? 'openai/gpt-oss-120b'
 const MAX_TURNS = 12 // how much of a conversation we carry back to the model
 const MAX_CHARS = 600 // per message; a rental question does not need more
-const MAX_TOKENS = 400 // answers are 2–4 sentences, and this is the cost ceiling
+const MAX_TOKENS = 400 // answers are 2–4 sentences, and this is the ceiling on a free tier
 
 type Turn = { role: 'user' | 'assistant'; content: string }
 
@@ -71,11 +77,11 @@ function offlineStream(question: string, reason: 'no-key' | 'error', lang: Lang)
 }
 
 export async function chat(request: Request): Promise<Response> {
-  if (request.method !== 'POST') return bad('Metoda nieobsługiwana', 405)
+  if (request.method !== 'POST') return bad('Method not allowed', 405)
 
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'local'
-  if (rateLimited(ip)) return bad('Za dużo pytań naraz. Spróbuj za chwilę.', 429)
+  if (rateLimited(ip)) return bad('Too many questions at once. Try again in a moment.', 429)
 
   let turns: Turn[] | null = null
   let lang: Lang = 'en'
@@ -85,28 +91,38 @@ export async function chat(request: Request): Promise<Response> {
     // The desk answers in the language the page is printed in.
     if ((body as { lang?: unknown })?.lang === 'pl') lang = 'pl'
   } catch {
-    return bad('Nieczytelne zapytanie')
+    return bad('Unreadable request')
   }
-  if (!turns) return bad('Nieczytelne zapytanie')
+  if (!turns) return bad('Unreadable request')
   const question = turns[turns.length - 1].content
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.CHAT_API_KEY ?? process.env.GROQ_API_KEY
   if (!apiKey) return offlineStream(question, 'no-key', lang)
 
-  const client = new Anthropic({ apiKey })
-  let stream: ReturnType<typeof client.messages.stream>
+  const upstream = new AbortController()
+  let res: Response
   try {
-    stream = client.messages.stream({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      // The fleet and the price list are the same on every request: cache them, and keep
-      // effort low — this is a front-desk answer, not a research task.
-      system: [{ type: 'text', text: SYSTEM(lang), cache_control: { type: 'ephemeral' } }],
-      output_config: { effort: 'low' },
-      messages: turns.map((t) => ({ role: t.role, content: t.content })),
+    res = await fetch(`${BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
+      signal: upstream.signal,
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        temperature: 0.4,
+        stream: true,
+        messages: [
+          { role: 'system', content: SYSTEM(lang) },
+          ...turns.map((t) => ({ role: t.role, content: t.content })),
+        ],
+      }),
     })
+    if (!res.ok || !res.body) {
+      console.error('[chat] provider answered', res.status, (await res.text()).slice(0, 300))
+      return offlineStream(question, 'error', lang)
+    }
   } catch (err) {
-    console.error('[chat] nie udało się otworzyć strumienia', err)
+    console.error('[chat] could not reach the provider', err)
     return offlineStream(question, 'error', lang)
   }
 
@@ -114,36 +130,48 @@ export async function chat(request: Request): Promise<Response> {
     async start(controller) {
       controller.enqueue(sse({ mode: 'live' }))
       let sent = false
+      const reader = res.body!.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
       try {
-        for await (const event of stream) {
-          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta' && event.delta.text) {
-            sent = true
-            controller.enqueue(sse({ text: event.delta.text }))
+        for (;;) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const parts = buffer.split('\n\n')
+          buffer = parts.pop() ?? ''
+          for (const part of parts) {
+            const line = part.split('\n').find((l) => l.startsWith('data:'))
+            if (!line) continue
+            const payload = line.slice(5).trim()
+            if (!payload || payload === '[DONE]') continue
+            let text = ''
+            try {
+              text = JSON.parse(payload)?.choices?.[0]?.delta?.content ?? ''
+            } catch {
+              continue // a half-written chunk; the next read completes it
+            }
+            if (text) {
+              sent = true
+              controller.enqueue(sse({ text }))
+            }
           }
         }
-        const final = await stream.finalMessage()
-        // A safety decline arrives as a normal response with nothing in it; say so rather
-        // than leaving an empty bubble on the page.
-        if (!sent) {
-          controller.enqueue(
-            sse({
-              text:
-                final.stop_reason === 'refusal'
-                  ? 'Na to akurat nie odpowiem. Chętnie pomogę przy autach i warunkach wynajmu Hali 4.'
-                  : offlineAnswer(question),
-            }),
-          )
-        }
+        // A refusal can come back as a well-formed response with nothing in it; answer from
+        // the price list rather than leaving an empty bubble on the page.
+        if (!sent) controller.enqueue(sse({ text: offlineAnswer(question, lang), mode: 'offline' }))
       } catch (err) {
-        console.error('[chat] strumień przerwany', err)
-        controller.enqueue(sent ? sse({ error: 'przerwane' }) : sse({ text: offlineAnswer(question), mode: 'offline' }))
+        console.error('[chat] stream interrupted', err)
+        controller.enqueue(
+          sent ? sse({ error: 'interrupted' }) : sse({ text: offlineAnswer(question, lang), mode: 'offline' }),
+        )
       } finally {
         controller.enqueue(sse({ done: true }))
         controller.close()
       }
     },
     cancel() {
-      stream.abort()
+      upstream.abort()
     },
   })
 

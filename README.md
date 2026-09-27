@@ -44,9 +44,9 @@ At every stop the shader cross-fades from the film frame to that photo (and back
 The **Front desk** button in the masthead (on a phone: "Ask the front desk" in the menu) opens a sheet where the visitor writes the question by hand and the answer comes back typed.
 
 - `server/knowledge.ts` builds the system prompt out of `src/data.ts`, so the assistant can never quote a price other than the one on the page. The muzzle is in the same file: cars and the Hala 4 offer only, no booking promises, no invented terms, and no obeying "ignore your instructions".
-- `server/chat.ts` is one handler over Web Request/Response: message length and count limits, a per-IP rate limit, SSE streaming to the browser. Model: `claude-opus-5`.
+- `server/chat.ts` is one handler over Web Request/Response: message length and count limits, a per-IP rate limit, and SSE streaming to the browser, translated from the provider's own stream.
 - `api/chat.ts` is the same handler as a serverless function (Vercel, Netlify Functions v2). Under `npm run dev` a plugin in `vite.config.ts` serves it at the same `/api/chat`.
-- The key: copy `.env.example` to `.env` and fill in `ANTHROPIC_API_KEY`. The key stays on the server; the browser only ever sees the answer text.
+- The provider: the desk talks to anything that speaks the OpenAI chat-completions protocol, so it is three variables rather than a dependency — `CHAT_API_KEY`, and optionally `CHAT_BASE_URL` / `CHAT_MODEL`. The default is Groq's free tier (`openai/gpt-oss-120b`, no card, 1000 requests a day); Gemini and OpenRouter are commented out in `.env.example`. Copy that file to `.env` and paste your key. The key stays on the server; the browser only ever sees the answer text.
 - **Without a key** (or when the API does not answer) the window falls back to `server/offline.ts`: it answers from the price list, turns down off-topic questions the same way the model does, and says plainly that the assistant is not connected.
 
 ## To replace
