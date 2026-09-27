@@ -13,8 +13,8 @@ import { SYSTEM } from './knowledge'
 import { offlineAnswer } from './offline'
 import type { Lang } from '../src/format'
 
-const BASE_URL = process.env.CHAT_BASE_URL ?? 'https://api.groq.com/openai/v1'
-const MODEL = process.env.CHAT_MODEL ?? 'openai/gpt-oss-120b'
+const BASE_URL = process.env.CHAT_BASE_URL || 'https://api.groq.com/openai/v1'
+const MODEL = process.env.CHAT_MODEL || 'openai/gpt-oss-120b'
 const MAX_TURNS = 12 // how much of a conversation we carry back to the model
 const MAX_CHARS = 600 // per message; a rental question does not need more
 const MAX_TOKENS = 400 // answers are 2–4 sentences, and this is the ceiling on a free tier
@@ -23,7 +23,8 @@ const MAX_TOKENS = 400 // answers are 2–4 sentences, and this is the ceiling o
 // 400 on it and left the answer cut off mid-sentence. A front-desk answer needs no reasoning,
 // so ask for none. Set CHAT_REASONING to low/medium/high for a model that wants it, or to
 // 'off' to leave the field out entirely; a provider that rejects it gets one retry without it.
-const REASONING = process.env.CHAT_REASONING ?? 'none'
+// An empty value (docker compose passes unset variables that way) means 'use the default'.
+const REASONING = process.env.CHAT_REASONING || 'none'
 
 type Turn = { role: 'user' | 'assistant'; content: string }
 
@@ -102,7 +103,7 @@ export async function chat(request: Request): Promise<Response> {
   if (!turns) return bad('Unreadable request')
   const question = turns[turns.length - 1].content
 
-  const apiKey = process.env.CHAT_API_KEY ?? process.env.GROQ_API_KEY
+  const apiKey = process.env.CHAT_API_KEY || process.env.GROQ_API_KEY
   if (!apiKey) return offlineStream(question, 'no-key', lang)
 
   const upstream = new AbortController()

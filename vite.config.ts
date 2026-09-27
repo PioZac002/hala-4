@@ -47,7 +47,7 @@ function answerDesk(mode: string): Plugin {
           server.config.logger.error(`[answer-desk] ${String(err)}`)
           res.statusCode = 500
           res.setHeader('content-type', 'application/json')
-          res.end(JSON.stringify({ error: 'Okienko obsługi jest chwilowo zamknięte.' }))
+          res.end(JSON.stringify({ error: 'The answer desk is closed for a moment.' }))
         }
       })
     },

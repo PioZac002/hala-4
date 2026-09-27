@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-server
+.git
+.github
+.idea
+.claude
+.impeccable
+media-exports
+*.md
+.env
+.env.*
+!.env.example
+Dockerfile
+.dockerignore

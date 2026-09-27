@@ -32,6 +32,35 @@ At every stop the shader cross-fades from the film frame to that photo (and back
 2. `node tools/build-frames.mjs <car>` — Swift + AVFoundation cuts the exact frames (this machine has no ffmpeg), `sharp` scales them with lanczos3, runs an unsharp mask and writes WebP together with a provenance sidecar next to every file.
 3. Add the `film` to `src/data.ts`: the times of the five inspection points read off the frames, the camera route and the crop.
 
+## Running with Docker
+
+One container serves the whole thing: the built page and `/api/chat` in a single Node process
+(`server/serve.ts`), no platform and no reverse proxy needed.
+
+```bash
+cp .env.example .env     # paste the key for the answer desk — optional
+docker compose up --build
+# http://localhost:8080
+```
+
+Without a key the container still runs: the desk answers from the price list and says so. Change
+the published port with `PORT=3000 docker compose up`, and stop everything with `docker compose down`.
+
+What is in the image: a two-stage build installs and runs `npm run build:all` (Vite for the page,
+esbuild for a 40 KB server bundle), and the runtime stage copies `dist/` and `dist-server/` into a
+`node:24-alpine` image with no `node_modules` at all. It runs as the image's unprivileged `node`
+user, exposes 8080 and reports health on `/healthz`. About 360 MB, most of it the 80 MB of frames
+plus the Node base image.
+
+The same server outside Docker:
+
+```bash
+npm run build:all && npm start
+```
+
+`PORT`, `HOST` and `STATIC_ROOT` are all overridable. Hashed assets under `/assets/` are served
+immutable, frames and fonts for an hour, HTML revalidated; text files go out gzipped.
+
 ## Languages
 
 - `src/i18n.tsx` holds every string a visitor can read, English next to Polish, and exposes `t()` for the page and `loc()` for data-side pairs. `src/format.ts` carries the formatters (money, dates, day counts) with no React in them, so the server can import the same ones.
