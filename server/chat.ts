@@ -19,6 +19,12 @@ const MAX_TURNS = 12 // how much of a conversation we carry back to the model
 const MAX_CHARS = 600 // per message; a rental question does not need more
 const MAX_TOKENS = 400 // answers are 2–4 sentences, and this is the ceiling on a free tier
 
+// Thinking models bill their hidden reasoning against max_tokens: Gemini Flash spent 393 of
+// 400 on it and left the answer cut off mid-sentence. A front-desk answer needs no reasoning,
+// so ask for none. Set CHAT_REASONING to low/medium/high for a model that wants it, or to
+// 'off' to leave the field out entirely; a provider that rejects it gets one retry without it.
+const REASONING = process.env.CHAT_REASONING ?? 'none'
+
 type Turn = { role: 'user' | 'assistant'; content: string }
 
 const enc = new TextEncoder()
@@ -100,9 +106,8 @@ export async function chat(request: Request): Promise<Response> {
   if (!apiKey) return offlineStream(question, 'no-key', lang)
 
   const upstream = new AbortController()
-  let res: Response
-  try {
-    res = await fetch(`${BASE_URL}/chat/completions`, {
+  const ask = (reasoning: string | null) =>
+    fetch(`${BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
       signal: upstream.signal,
@@ -111,12 +116,22 @@ export async function chat(request: Request): Promise<Response> {
         max_tokens: MAX_TOKENS,
         temperature: 0.4,
         stream: true,
+        ...(reasoning ? { reasoning_effort: reasoning } : {}),
         messages: [
           { role: 'system', content: SYSTEM(lang) },
           ...turns.map((t) => ({ role: t.role, content: t.content })),
         ],
       }),
     })
+
+  let res: Response
+  try {
+    res = await ask(REASONING === 'off' ? null : REASONING)
+    // Some providers reject an unknown reasoning_effort; the question is worth one more try.
+    if (res.status === 400 && REASONING !== 'off') {
+      console.warn('[chat] provider rejected reasoning_effort, retrying without it')
+      res = await ask(null)
+    }
     if (!res.ok || !res.body) {
       console.error('[chat] provider answered', res.status, (await res.text()).slice(0, 300))
       return offlineStream(question, 'error', lang)
