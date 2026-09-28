@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Assistant } from './components/Assistant'
+import { Assistant, DeskNote } from './components/Assistant'
 import { Masthead } from './components/Masthead'
 import { Walkaround } from './hero/Walkaround'
 import { Booking } from './sections/Booking'
@@ -45,6 +45,7 @@ export default function App() {
         />
       </main>
       <Assistant open={asking} onClose={() => setAsking(false)} carId={carId} triggerRef={askBtn} />
+      <DeskNote onAsk={() => setAsking(true)} suppressed={asking} />
       <Stub />
     </>
   )

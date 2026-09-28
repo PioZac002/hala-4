@@ -26,6 +26,22 @@ Frames carry the motion blur of the footage. Any inspection point can be swapped
 
 At every stop the shader cross-fades from the film frame to that photo (and back once the scroll moves on), and the inspection strip, the car card and the no-WebGL version take it directly. The RS 3, the 911 GT3 RS and the Octavia RS use this for their front shot.
 
+`tools/add-stills.mjs` does the conversion. Name each photo after its stop and point the tool at
+the folder:
+
+```bash
+node tools/add-stills.mjs rs3 ~/Desktop/rs3-photos     # --dry to see what it would do
+```
+
+Any file whose name contains `front`, `side`, `rear`, `door` or `cabin` is scaled to 1600×900
+(cropped to 16:9 when it is not), unsharp-masked, written as WebP into
+`public/frames/<car>/stills/` with a provenance sidecar, and printed back as the `still:` lines to
+paste into `src/data.ts`.
+
+The angle each photo has to match is the frame the film stops on. `media-exports/checkpoint-reference/`
+holds all twenty of them, one folder per car plus `OVERVIEW.jpg` as a contact sheet — useful as a
+reference when shooting or generating replacements.
+
 ### Adding a filmed car
 
 1. Put the clip in `media-exports/` and add it to `FILMS` in `tools/build-frames.mjs`.
@@ -77,6 +93,7 @@ The **Front desk** button in the masthead (on a phone: "Ask the front desk" in t
 - Thinking is asked off (`reasoning_effort: none`, overridable with `CHAT_REASONING`): a reasoning model bills its hidden thinking against `max_tokens`, and Gemini Flash spent 393 of 400 on it and cut the answer off mid-sentence. A provider that does not know the field is retried once without it.
 - `api/chat.ts` is the same handler as a serverless function (Vercel, Netlify Functions v2). Under `npm run dev` a plugin in `vite.config.ts` serves it at the same `/api/chat`.
 - The provider: the desk talks to anything that speaks the OpenAI chat-completions protocol, so it is three variables rather than a dependency — `CHAT_API_KEY`, and optionally `CHAT_BASE_URL` / `CHAT_MODEL`. The default is Groq's free tier (`openai/gpt-oss-120b`, no card, 1000 requests a day); Gemini and OpenRouter are commented out in `.env.example`. Copy that file to `.env` and paste your key. The key stays on the server; the browser only ever sees the answer text.
+- A slip clipped to the bottom-right corner (`DeskNote` in `src/components/Assistant.tsx`) offers the desk once the hero is behind the visitor. It stays out of the way: hidden over the hero, while the desk is open and over the booking form, dismissible, and the dismissal is remembered in `localStorage` (`hala4:note`).
 - **Without a key** (or when the API does not answer) the window falls back to `server/offline.ts`: it answers from the price list, turns down off-topic questions the same way the model does, and says plainly that the assistant is not connected.
 
 ## To replace

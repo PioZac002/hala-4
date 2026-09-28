@@ -2379,3 +2379,133 @@ li:nth-child(even) .shot img {
     border-bottom-width: 2px;
   }
 }
+
+/* ——— The clipped slip: the front desk saying it is there ——— */
+
+.note {
+  position: fixed;
+  z-index: 40;
+  right: var(--pad);
+  bottom: calc(var(--pad) + env(safe-area-inset-bottom));
+  width: 268px;
+  padding: 14px 15px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  /* card print: a slip lying on the form, the one object here allowed a shadow */
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.16);
+  opacity: 0;
+  visibility: hidden;
+  transform: rotate(-1.2deg) translateY(12px);
+  transition:
+    opacity 220ms ease,
+    transform 420ms var(--ease-out),
+    visibility 0s 420ms;
+}
+.note.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: rotate(-1.2deg);
+  transition:
+    opacity 220ms ease,
+    transform 420ms var(--ease-out);
+}
+.note .clip {
+  top: -17px;
+  left: 15px;
+  width: 12px;
+  height: 32px;
+}
+.note__label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-stretch: 85%;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--print-2);
+}
+.note__text {
+  margin: 5px 0 10px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.note__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule-soft);
+}
+.note__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+  cursor: pointer;
+}
+.note__cta:hover {
+  text-decoration-thickness: 2.5px;
+}
+.note__cta .icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 160ms var(--ease-out);
+}
+.note__cta:hover .icon {
+  transform: translateX(3px);
+}
+.note__no {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--print-2);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.note__no:hover {
+  color: var(--print);
+}
+
+@media (max-width: 860px) {
+  /* On a phone the slip would cover rows the visitor is reading, so it keeps the name
+     and the action and drops the sentence. */
+  .note {
+    right: var(--pad);
+    left: auto;
+    width: auto;
+    max-width: calc(100vw - 2 * var(--pad));
+    padding: 11px 13px 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+  .note__text {
+    display: none;
+  }
+  .note__row {
+    gap: 18px;
+    padding-top: 5px;
+    border-top: 0;
+  }
+  .note__cta {
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note,
+  .note.is-on {
+    transform: rotate(-1.2deg);
+    transition: opacity 120ms ease;
+  }
+}

@@ -225,7 +225,7 @@ The form is flat. Depth appears only where a physical object sits on the paper: 
 
 ### Shadow Vocabulary
 - **Clipped print** (`box-shadow: 0 3px 8px rgb(0 0 0 / 0.18)`, with a 3px white border and a -2deg / +1.6deg alternating tilt): inspection photos dropped into the strip.
-- **Card print** (`box-shadow: 0 4px 12px rgb(0 0 0 / 0.16)`, with a 4px white border and a -1.2deg tilt): the photo on the car card.
+- **Card print** (`box-shadow: 0 4px 12px rgb(0 0 0 / 0.16)`, with a 4px white border and a -1.2deg tilt): the photo on the car card, and the clipped slip in the corner of the page.
 - **Paper clip** (`filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.25))`): the wire clip holding each photo.
 - **Current ring** (`box-shadow: 0 0 0 3px paper, 0 0 0 5px ink`): the currently selected inspection photo. This is a state, not elevation.
 
@@ -301,6 +301,13 @@ Printed in ballpoint blue: pressing it is the act of signing.
 - While an answer streams in, a solid `print` bar blinks at the end of the text — a printer, not a cursor.
 - The opening state offers three questions in dashed-bordered rows, which tint `ink-wash` on hover. The question field is a standard form field; its send button is `ink`, and before anything is written it drops to an unfilled outline rather than a grey slab.
 - Errors are a handwritten `stamp`-red note, as everywhere else on the form. When the assistant is answering from the price list instead of the model, a `print-pink` footnote says so.
+
+### Clipped Slip (the desk's only floating element)
+- A 268px note of `paper` with a 1px print border, tilted -1.2deg, with a paper clip hooked over its top edge and the card-print shadow. It is a slip of paper lying on the form, which is the only thing this world lets float; it is never a rounded bubble and never a panel.
+- Contents, top to bottom: the name in the label style ("DORADCA AI" / "AI ADVISER"), one printed sentence saying what it answers, a `rule-soft` hairline, then the action in `ink` with the trailing arrow, and a small `print-2` "Not now" opposite it.
+- It drops in once — 12px down, 420 ms on the standard ease — and then holds still. Nothing pulses, nothing reappears.
+- Restraint is part of the component: it waits until the hero is behind the visitor, hides while the desk is open and while the booking form is on screen, and once waved off it stays away (remembered per visitor). The masthead keeps the permanent way in.
+- On phones it drops the sentence and keeps the name and the action, so it covers as little of the page as possible.
 
 ## Do's and Don'ts
 

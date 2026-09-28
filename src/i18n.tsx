@@ -219,6 +219,16 @@ const DICT = {
   'desk.send': { en: 'Send', pl: 'Wyślij' },
   'desk.error': { en: 'The front desk window is not answering. Try again, or send the enquiry with the form.', pl: 'Okienko obsługi nie odpowiada. Spróbuj jeszcze raz albo wyślij zapytanie formularzem.' },
   'desk.offline': { en: 'The AI assistant is not connected right now — I answer from the price list, briefly and without exceptions.', pl: 'Asystent AI nie jest w tej chwili podłączony — odpowiadam z cennika, krótko i bez wyjątków.' },
+  // The clipped slip in the corner: the desk saying it is there, once, quietly
+  'note.aria': { en: 'AI adviser', pl: 'Doradca AI' },
+  'note.label': { en: 'AI adviser', pl: 'Doradca AI' },
+  'note.text': {
+    en: 'Answers questions about the cars, prices and rental terms.',
+    pl: 'Odpowiada na pytania o auta, ceny i warunki wynajmu.',
+  },
+  'note.cta': { en: 'Ask', pl: 'Zapytaj' },
+  'note.dismiss': { en: 'Not now', pl: 'Nie teraz' },
+
   'desk.seed1': { en: 'What does a {car} cost for a weekend?', pl: 'Ile kosztuje {car} na weekend?' },
   'desk.seed2': { en: 'What is the deposit and the km limit?', pl: 'Jaka jest kaucja i limit kilometrów?' },
   'desk.seed3': { en: 'What does the handover at the hall look like?', pl: 'Jak wygląda odbiór auta w hali?' },
