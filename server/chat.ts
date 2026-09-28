@@ -26,6 +26,14 @@ const MAX_TOKENS = 400 // answers are 2–4 sentences, and this is the ceiling o
 // An empty value (docker compose passes unset variables that way) means 'use the default'.
 const REASONING = process.env.CHAT_REASONING || 'none'
 
+// A free tier runs out of capacity in bursts: Gemini answers 503 "high demand", Groq answers 429.
+// The question is worth a couple of seconds of patience before the desk gives up and reads from
+// the price list. CHAT_MODEL_FALLBACK is the last resort — a quieter model on the same provider.
+const FALLBACK_MODEL = process.env.CHAT_MODEL_FALLBACK || ''
+const RETRY_STATUS = new Set([429, 500, 502, 503, 504])
+const RETRY_DELAYS = [400, 1200] // ms
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 type Turn = { role: 'user' | 'assistant'; content: string }
 
 const enc = new TextEncoder()
@@ -107,13 +115,13 @@ export async function chat(request: Request): Promise<Response> {
   if (!apiKey) return offlineStream(question, 'no-key', lang)
 
   const upstream = new AbortController()
-  const ask = (reasoning: string | null) =>
+  const ask = (model: string, reasoning: string | null) =>
     fetch(`${BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
       signal: upstream.signal,
       body: JSON.stringify({
-        model: MODEL,
+        model,
         max_tokens: MAX_TOKENS,
         temperature: 0.4,
         stream: true,
@@ -127,12 +135,28 @@ export async function chat(request: Request): Promise<Response> {
 
   let res: Response
   try {
-    res = await ask(REASONING === 'off' ? null : REASONING)
+    let reasoning: string | null = REASONING === 'off' ? null : REASONING
+    res = await ask(MODEL, reasoning)
+
     // Some providers reject an unknown reasoning_effort; the question is worth one more try.
-    if (res.status === 400 && REASONING !== 'off') {
+    if (res.status === 400 && reasoning) {
       console.warn('[chat] provider rejected reasoning_effort, retrying without it')
-      res = await ask(null)
+      reasoning = null
+      res = await ask(MODEL, null)
     }
+
+    // Capacity, not configuration: wait a moment and ask again, then try the quieter model.
+    for (const delay of RETRY_DELAYS) {
+      if (!RETRY_STATUS.has(res.status)) break
+      console.warn(`[chat] provider answered ${res.status}, retrying in ${delay}ms`)
+      await wait(delay)
+      res = await ask(MODEL, reasoning)
+    }
+    if (RETRY_STATUS.has(res.status) && FALLBACK_MODEL && FALLBACK_MODEL !== MODEL) {
+      console.warn(`[chat] ${MODEL} still busy, falling back to ${FALLBACK_MODEL}`)
+      res = await ask(FALLBACK_MODEL, reasoning)
+    }
+
     if (!res.ok || !res.body) {
       console.error('[chat] provider answered', res.status, (await res.text()).slice(0, 300))
       return offlineStream(question, 'error', lang)

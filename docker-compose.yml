@@ -16,5 +16,6 @@ services:
       CHAT_API_KEY: ${CHAT_API_KEY:-}
       CHAT_BASE_URL: ${CHAT_BASE_URL:-}
       CHAT_MODEL: ${CHAT_MODEL:-}
+      CHAT_MODEL_FALLBACK: ${CHAT_MODEL_FALLBACK:-}
       CHAT_REASONING: ${CHAT_REASONING:-}
     restart: unless-stopped
