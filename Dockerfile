@@ -18,7 +18,8 @@ RUN npm run build:all
 FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=8080
+# No PORT here on purpose: the server defaults to 8080 and a platform that injects its own
+# PORT (Render, Cloud Run, Fly) must win. EXPOSE stays as the hint for local runs.
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/dist-server ./dist-server

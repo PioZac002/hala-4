@@ -68,6 +68,14 @@ esbuild for a 40 KB server bundle), and the runtime stage copies `dist/` and `di
 user, exposes 8080 and reports health on `/healthz`. About 360 MB, most of it the 80 MB of frames
 plus the Node base image.
 
+### Deploying the image
+
+The container takes its port from `PORT`, binds `0.0.0.0` and answers `/healthz`, which is what
+Render, Google Cloud Run and Fly.io expect. On Render: a **Web Service** (not a Static Site — the
+answer desk needs a server), runtime **Docker**, health check path `/healthz`, and `CHAT_API_KEY`
+(plus `CHAT_BASE_URL` / `CHAT_MODEL`) as environment variables. Nothing else needs configuring;
+the Dockerfile deliberately sets no `PORT` so the platform's own value wins.
+
 The same server outside Docker:
 
 ```bash
