@@ -2,6 +2,10 @@
 
 Vite + React 19 + React Three Fiber. The hero is a scroll-scrubbed walk-around of a car in WebGL that fills in a handover protocol as it goes. Four cars have their own film shot in the hall and can be switched on the fly. The page is printed in two languages, English by default.
 
+**Live demo:** https://hala-4.onrender.com
+
+> **How the live version runs:** a single Docker container on Render's free tier (a Web Service, see [Deploying the image](#deploying-the-image)) serves both the page and `/api/chat`, the endpoint behind the AI front desk. The desk talks to Google Gemini through its OpenAI-compatible API; the key lives only in the service's environment variables. After about 15 minutes without traffic Render puts the service to sleep, so the first visit can take up to a minute; the film frames are cached after that. When the model's free quota is busy, the desk retries and then answers from the price list, saying so plainly.
+
 ```bash
 npm install
 npm run dev      # http://localhost:5174 (port from .claude/launch.json), or Vite's default port
